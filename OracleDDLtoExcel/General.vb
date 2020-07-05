@@ -3,7 +3,7 @@
     ' Constants
     '-----------
     Public Const SINGLE_COMMENT_START = "--"
-    Public Const SINGLE_COMMENT_END = vbLf
+    Public Const SINGLE_COMMENT_END = vbCrLf
     Public Const MULTI_COMMENT_START = "/*"
     Public Const MULTI_COMMENT_END = "*/"
 
