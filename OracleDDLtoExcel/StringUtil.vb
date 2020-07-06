@@ -1,21 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
 
 Module StringUtil
-    '---------
-    ' Methods
-    '---------
-    <Extension()>
-    Public Sub RemoveSubstring(ByRef pString As String, ByVal pStartString As String, ByVal pEndString As String)
-        Dim intStartIdx As Integer = -1
-        Dim intEndIdx As Integer = -1
-
-        If pString.Contains(pStartString, pEndString) Then
-            intStartIdx = pString.IndexOf(pStartString)
-            intEndIdx = pString.IndexOf(pEndString, intStartIdx + pStartString.Length)
-            pString = pString.Substring(0, intStartIdx) & pString.Substring(intEndIdx + pEndString.Length)
-        End If
-    End Sub
-
     '------------
     ' Functions
     '------------
@@ -67,5 +52,28 @@ Module StringUtil
         Loop While intStartIdx > -1
 
         Return intCount
+    End Function
+
+    <Extension()>
+    Public Function SubstringCount(ByVal pString As String, ByVal pSearchString As String) As Integer
+        Dim intCount As Integer = 0
+        Dim intOffsetIdx As Integer = 0
+        Dim intStartIdx As Integer = -1
+
+        Do
+            intStartIdx = pString.IndexOf(pSearchString, intOffsetIdx)
+
+            If intStartIdx > -1 Then
+                intCount += 1
+                intOffsetIdx = intStartIdx + pSearchString.Length
+            End If
+        Loop While intStartIdx > -1
+
+        Return intCount
+    End Function
+
+    <Extension()>
+    Public Function EnumToString(ByVal pEnumName As String, pEnumPrefix As String)
+        Return pEnumName.Replace(pEnumPrefix, String.Empty).Replace("_", String.Empty)
     End Function
 End Module

@@ -6,48 +6,47 @@
     Public Const CHOOSE As String = "Please choose {0}."
     Public Const IDLE As String = "Idle"
     Public Const SUCCESS As String = "Success"
-    Public Const REMOVE_COMMENTS As String = "Removing comments ({0} of {1} {2}) . . ."
+    Public Const REMOVE_COMMENTS As String = "Removing comments ({0} of {1} comments) . . ."
+    Public Const GET_COMMANDS As String = "Getting DDL commands ({0} of {1} commands) . . ."
 
     '---------
     ' Methods
     '---------
     Public Sub Show(ByVal pMessage As String, ByVal pIcon As MessageBoxIcon, ByVal pButtons As MessageBoxButtons, ByVal pControl As Control, Optional ByVal pMessageArgs As String() = Nothing)
-        Dim message As String = CreateMessage(pMessage, pMessageArgs)
+        Dim message As String = FormatMessage(pMessage, pMessageArgs)
 
         MessageBox.Show(message, pIcon.ToString("F"), pButtons, pIcon)
         pControl.Focus()
         Application.DoEvents()
     End Sub
 
-    Public Sub ShowStatus(ByRef pStatusLabel As Label, ByVal pStatus As String, Optional ByVal pMessageArgs As String() = Nothing)
-        pStatusLabel.Text = CreateMessage(pStatus, pMessageArgs)
+    Public Sub ShowStatus(ByVal pStatus As String, Optional ByVal pMessageArgs As String() = Nothing)
+        Main.lblStatus.Text = FormatMessage(pStatus, pMessageArgs)
         Application.DoEvents()
     End Sub
 
-    Public Sub ShowStatus(ByRef pStatusLabel As Label, ByVal pStatus As String, ByRef pProgressBar As ProgressBar, ByVal pMinimum As Integer, ByVal pMaximum As Integer)
-        pStatusLabel.Text = pStatus
-        pProgressBar.Minimum = pMinimum
-        pProgressBar.Maximum = pMaximum
-        pProgressBar.Value = 0
+    Public Sub ShowStatus(ByVal pStatus As String, ByVal pMinimum As Integer, ByVal pMaximum As Integer, Optional ByVal pMessageArgs As String() = Nothing)
+        Main.lblStatus.Text = FormatMessage(pStatus, pMessageArgs)
+        Main.pbProgress.Minimum = pMinimum
+        Main.pbProgress.Maximum = pMaximum
+        Main.pbProgress.Value = 0
         Application.DoEvents()
     End Sub
 
-    Public Sub ShowStatus(ByRef pStatusLabel As Label, ByVal pStatus As String, ByRef pProgressBar As ProgressBar, ByVal pValue As Integer, Optional ByVal pMessageArgs As String() = Nothing)
-        pStatusLabel.Text = CreateMessage(pStatus, pMessageArgs)
-        pProgressBar.Value = pValue
+    Public Sub ShowStatus(ByVal pStatus As String, ByVal pValue As Integer, Optional ByVal pMessageArgs As String() = Nothing)
+        Main.lblStatus.Text = FormatMessage(pStatus, pMessageArgs)
+        Main.pbProgress.Value = pValue
         Application.DoEvents()
     End Sub
 
     '-----------
     ' Functions
     '-----------
-    Private Function CreateMessage(ByVal pMessage As String, ByVal pMessageArgs As String())
+    Private Function FormatMessage(ByVal pMessage As String, ByVal pMessageArgs As String())
         Dim message As String = pMessage
 
         If pMessageArgs IsNot Nothing Then
-            For intIdx As Integer = 0 To pMessageArgs.Length - 1
-                message = message.Replace("{" & intIdx & "}", pMessageArgs(intIdx))
-            Next
+            message = String.Format(pMessage, pMessageArgs)
         End If
 
         Return message

@@ -3,14 +3,14 @@
     ' Attributes
     '------------
     Public Name As String
-    Public DataType As DataTypes
+    Public DataType As DataType
     Public DefaultValue As String
     Public Constraints As New List(Of Constraint)
 
     '-------------
     ' Constructor
     '-------------
-    Public Sub New(ByVal pName As String, ByVal pDataType As DataTypes)
+    Public Sub New(ByVal pName As String, ByVal pDataType As DataType)
         Name = pName
         DataType = pDataType
     End Sub
