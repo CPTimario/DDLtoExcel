@@ -3,7 +3,7 @@
     ' Constants
     '-----------
     Public Const SINGLE_COMMENT_START = "--"
-    Public Const SINGLE_COMMENT_END = vbCrLf
+    Public Const SINGLE_COMMENT_END = vbLf
     Public Const MULTI_COMMENT_START = "/*"
     Public Const MULTI_COMMENT_END = "*/"
 
@@ -50,12 +50,4 @@
         dtNUMBER
         dtDATE
     End Enum
-
-    '------------
-    ' Functions
-    '------------
-    Public Sub RemoveComments(ByRef pString As String)
-        Call RemoveSubstring(pString, SINGLE_COMMENT_START, SINGLE_COMMENT_END)
-        Call RemoveSubstring(pString, MULTI_COMMENT_START, MULTI_COMMENT_END)
-    End Sub
 End Module

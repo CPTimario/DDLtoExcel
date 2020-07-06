@@ -22,6 +22,7 @@ Partial Class Main
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.lblAppTitle = New System.Windows.Forms.Label()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.txtTitle = New System.Windows.Forms.TextBox()
@@ -30,9 +31,10 @@ Partial Class Main
         Me.btnOpen = New System.Windows.Forms.Button()
         Me.btnExport = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
-        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
-        Me.lblStatus = New System.Windows.Forms.Label()
         Me.ofdOpenFile = New System.Windows.Forms.OpenFileDialog()
+        Me.pbProgress = New System.Windows.Forms.ProgressBar()
+        Me.lblStatus = New System.Windows.Forms.Label()
+        Me.timDelayIdleMessage = New System.Windows.Forms.Timer(Me.components)
         Me.SuspendLayout()
         '
         'lblAppTitle
@@ -113,26 +115,30 @@ Partial Class Main
         Me.btnCancel.Text = "Cancel"
         Me.btnCancel.UseVisualStyleBackColor = True
         '
-        'ProgressBar1
+        'ofdOpenFile
         '
-        Me.ProgressBar1.Location = New System.Drawing.Point(18, 189)
-        Me.ProgressBar1.Name = "ProgressBar1"
-        Me.ProgressBar1.Size = New System.Drawing.Size(618, 23)
-        Me.ProgressBar1.TabIndex = 8
+        Me.ofdOpenFile.Filter = "SQL|*.sql|TEXT|*.txt"
+        Me.ofdOpenFile.Title = "Open File"
+        '
+        'pbProgress
+        '
+        Me.pbProgress.Location = New System.Drawing.Point(12, 189)
+        Me.pbProgress.Name = "pbProgress"
+        Me.pbProgress.Size = New System.Drawing.Size(624, 23)
+        Me.pbProgress.TabIndex = 8
         '
         'lblStatus
         '
         Me.lblStatus.AutoSize = True
-        Me.lblStatus.Location = New System.Drawing.Point(14, 215)
+        Me.lblStatus.Location = New System.Drawing.Point(12, 215)
         Me.lblStatus.Name = "lblStatus"
         Me.lblStatus.Size = New System.Drawing.Size(35, 20)
         Me.lblStatus.TabIndex = 9
         Me.lblStatus.Text = "Idle"
         '
-        'ofdOpenFile
+        'timDelayIdleMessage
         '
-        Me.ofdOpenFile.Filter = "SQL|*.sql|TEXT|*.txt"
-        Me.ofdOpenFile.Title = "Open File"
+        Me.timDelayIdleMessage.Interval = 3000
         '
         'Main
         '
@@ -140,7 +146,7 @@ Partial Class Main
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(648, 240)
         Me.Controls.Add(Me.lblStatus)
-        Me.Controls.Add(Me.ProgressBar1)
+        Me.Controls.Add(Me.pbProgress)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnExport)
         Me.Controls.Add(Me.btnOpen)
@@ -167,7 +173,8 @@ Partial Class Main
     Friend WithEvents btnOpen As Button
     Friend WithEvents btnExport As Button
     Friend WithEvents btnCancel As Button
-    Friend WithEvents ProgressBar1 As ProgressBar
-    Friend WithEvents lblStatus As Label
     Friend WithEvents ofdOpenFile As OpenFileDialog
+    Friend WithEvents pbProgress As ProgressBar
+    Friend WithEvents lblStatus As Label
+    Friend WithEvents timDelayIdleMessage As Timer
 End Class
