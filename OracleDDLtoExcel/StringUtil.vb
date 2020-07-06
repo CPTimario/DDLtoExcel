@@ -16,13 +16,9 @@
         Return resultString
     End Function
 
-    Public Function RemoveSubstring(ByVal pString As String, ByVal pStart As String, ByVal pEnd As String) As String
-        Dim resultString As String = pString
-
-        While Not Substring(resultString, pStart, pEnd) = String.Empty
-            resultString = resultString.Replace(Substring(resultString, pStart, pEnd), String.Empty)
+    Public Sub RemoveSubstring(ByRef pString As String, ByVal pStart As String, ByVal pEnd As String)
+        While Not Substring(pString, pStart, pEnd) = String.Empty
+            pString = pString.Replace(Substring(pString, pStart, pEnd), String.Empty)
         End While
-
-        Return resultString
-    End Function
+    End Sub
 End Module

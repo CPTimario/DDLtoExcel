@@ -16,7 +16,7 @@ Public Class Main
             Message.Show(Message.CHOOSE, MessageBoxIcon.Error, MessageBoxButtons.OK, txtFile, New String() {"file"})
         Else
             textContent = File.ReadAllText(txtFile.Text)
-            textContent = RemoveComments(textContent)
+            Call RemoveComments(textContent)
         End If
     End Sub
 End Class

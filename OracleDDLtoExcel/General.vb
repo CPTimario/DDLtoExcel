@@ -54,12 +54,8 @@
     '------------
     ' Functions
     '------------
-    Public Function RemoveComments(ByVal pString As String) As String
-        Dim resultString As String = pString
-
-        resultString = RemoveSubstring(resultString, SINGLE_COMMENT_START, SINGLE_COMMENT_END)
-        resultString = RemoveSubstring(resultString, MULTI_COMMENT_START, MULTI_COMMENT_END)
-
-        Return resultString
-    End Function
+    Public Sub RemoveComments(ByRef pString As String)
+        Call RemoveSubstring(pString, SINGLE_COMMENT_START, SINGLE_COMMENT_END)
+        Call RemoveSubstring(pString, MULTI_COMMENT_START, MULTI_COMMENT_END)
+    End Sub
 End Module
