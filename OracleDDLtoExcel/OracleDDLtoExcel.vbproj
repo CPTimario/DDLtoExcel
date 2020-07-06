@@ -74,8 +74,9 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Column.vb" />
-    <Compile Include="General.vb" />
+    <Compile Include="Object Classes\Column.vb" />
+    <Compile Include="Utility Modules\CommandExtraction.vb" />
+    <Compile Include="Utility Modules\General.vb" />
     <Compile Include="Main.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -83,7 +84,7 @@
       <DependentUpon>Main.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Message.vb" />
+    <Compile Include="Utility Modules\Message.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -99,8 +100,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="StringUtil.vb" />
-    <Compile Include="Table.vb" />
+    <Compile Include="Utility Modules\String.vb" />
+    <Compile Include="Object Classes\Table.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Main.resx">
