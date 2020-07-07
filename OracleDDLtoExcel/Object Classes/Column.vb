@@ -5,14 +5,16 @@
     Public Name As String
     Public DataType As DataType
     Public DefaultValue As String
-    Public Constraints As New List(Of Constraint)
+    Public Constraints As List(Of Constraint)
 
     '-------------
     ' Constructor
     '-------------
-    Public Sub New(ByVal name As String, ByVal dataType As DataType)
+    Public Sub New(ByVal name As String, ByVal dataType As DataType, Optional ByVal defaultValue As String = "", Optional ByVal constraints As List(Of Constraint) = Nothing)
         Me.Name = name
         Me.DataType = dataType
+        Me.DefaultValue = defaultValue
+        Me.Constraints = IIf(constraints Is Nothing, New List(Of Constraint), constraints)
     End Sub
 
     '---------

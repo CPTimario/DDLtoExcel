@@ -21,13 +21,20 @@ Public Class Main
             Message.Show(Message.CHOOSE, MessageBoxIcon.Error, MessageBoxButtons.OK, txtFile, New String() {"file"})
         Else
             CancelFlg = False
-            btnExport.Enabled = False
+            Call EnableFormComponents(False)
 
             content = File.ReadAllText(txtFile.Text)
-            Call RemoveComments(content.Trim)
-            sqlCommands = GetSQLCommands(content)
+
+            content = content.RemoveComments()
+            If CancelFlg Then Exit Sub
+
+            sqlCommands = content.GetSQLCommands()
+            If CancelFlg Then Exit Sub
+
+            Call ExecuteCommands(sqlCommands)
 
             Call ShowStatus(SUCCESS)
+            Call EnableFormComponents(True)
             timDelayIdleMessage.Start()
         End If
     End Sub
@@ -38,8 +45,16 @@ Public Class Main
     End Sub
 
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-        'CancelFlg = True
-        'Call ShowStatus(CANCEL)
-        'timDelayIdleMessage.Start()
+        CancelFlg = True
+        Call EnableFormComponents(True)
+
+        Call ShowStatus(CANCEL)
+        timDelayIdleMessage.Start()
+    End Sub
+
+    Private Sub EnableFormComponents(ByVal value As Boolean)
+        btnExport.Enabled = value
+        btnOpen.Enabled = value
+        txtTitle.Enabled = value
     End Sub
 End Class

@@ -1,38 +1,43 @@
 ﻿Public Module General
+    '------------
+    ' Constants
+    '------------
+    Public Const TABLE_SYNTAX As String = "(TABLE\s+)\""*\w+\""*\s*\(\s*(" & COLUMN_SYNTAX & ")*\,*\s*)+\)"
+    Public Const COLUMN_SYNTAX As String = "\""*\w+\""*\s*\w+(\s*\(\s*\d+\s*\,*\s*\w*\s*\))*"
     '-----------
     ' Variables
     '-----------
     Public CancelFlg As Boolean = False
-    Public SqlComments As New List(Of SQlComment)(
+    Public Tables As List(Of Table)
+    Public SqlComments As New List(Of StringPair)(
         {
-            New SQlComment("SINGLE", "--", vbLf),
-            New SQlComment("MULTI", "/*", "*/")
+            New StringPair("--", vbLf),
+            New StringPair("/*", "*/")
         })
+    Public Parenthesis As New StringPair("(", ")")
     Public DDLCommands As New Dictionary(Of DDLCommand, String) From {
         {DDLCommand.ddlCREATE, "CREATE "},
         {DDLCommand.ddlALTER, "ALTER "},
         {DDLCommand.ddlDROP, "DROP "},
-        {DDLCommand.ddlCOMMENT_ON, "COMMENT ON "}
+        {DDLCommand.ddlCOMMENT_ON_COLUMN, "COMMENT ON COLUMN"}
+    }
+    Public DDLCreateDropObjects As New Dictionary(Of DDLCreateDropObject, String) From {
+        {DDLCreateDropObject.crdrTABLE, "TABLE "},
+        {DDLCreateDropObject.crdrVIEW, "VIEW "},
+        {DDLCreateDropObject.crdrINDEX, "INDEX "}
+    }
+    Public DDLAlterObjects As New Dictionary(Of DDLAlterObject, String) From {
+        {DDLAlterObject.altTABLE, "TABLE "},
+        {DDLAlterObject.altVIEW, "VIEW "}
     }
 
-    '------------
-    ' Structures
-    '------------
-    Public Structure EnumPrefix
-        Public Const CONSTRAINT_TYPE As String = "ct"
-        Public Const DATA_TYPE As String = "dt"
-        Public Const DDL_COMMAND As String = "ddl"
-    End Structure
-
-    Public Structure SQlComment
-        Public Type As String
+    Public Structure StringPair
         Public StartString As String
         Public EndString As String
 
-        Public Sub New(ByVal pType As String, ByVal pStartString As String, ByVal pEndString As String)
-            Type = pType
-            StartString = pStartString
-            EndString = pEndString
+        Public Sub New(ByVal startString As String, ByVal endString As String)
+            Me.StartString = startString
+            Me.EndString = endString
         End Sub
     End Structure
 
@@ -81,6 +86,17 @@
         ddlCREATE
         ddlALTER
         ddlDROP
-        ddlCOMMENT_ON
+        ddlCOMMENT_ON_COLUMN
+    End Enum
+
+    Public Enum DDLCreateDropObject
+        crdrTABLE
+        crdrVIEW
+        crdrINDEX
+    End Enum
+
+    Public Enum DDLAlterObject
+        altTABLE
+        altVIEW
     End Enum
 End Module

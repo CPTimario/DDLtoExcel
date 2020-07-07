@@ -4,7 +4,7 @@ Module StringUtils
     '------------
     ' Functions
     '------------
-    <Extension()>
+    <Extension>
     Public Function Contains(ByVal value As String, ByVal searchStringStart As String, Optional ByVal searchStringEnd As String = "", Optional ByVal offsetIndex As Integer = 0) As Boolean
         Dim startIndex As Integer
         Dim endIndex As Integer
@@ -19,7 +19,7 @@ Module StringUtils
         Return startIndex > -1 AndAlso endIndex > -1
     End Function
 
-    <Extension()>
+    <Extension>
     Public Function Substring(ByVal value As String, ByVal searchStringStart As String, ByVal searchStringEnd As String) As String
         Substring = String.Empty
 
@@ -31,21 +31,33 @@ Module StringUtils
         End If
     End Function
 
-    '<Extension()>
-    'Public Function SubstringCount(ByVal value As String, ByVal searchString As String) As Integer
-    '    SubstringCount = 0
+    <Extension>
+    Public Function Substring(ByVal value As String, ByVal stringPair As StringPair)
+        Substring = String.Empty
 
-    '    Dim offsetIndex As Integer = 0
-    '    Dim searchIndex As Integer
+        Dim indexStack As New Stack(Of Integer)
+        Dim startIndex As Integer = value.IndexOf(stringPair.StartString)
+        Dim length As Integer = 0
 
-    '    While value.Contains(searchString, , offsetIndex)
-    '        SubstringCount += 1
-    '        searchIndex = value.IndexOf(searchString, offsetIndex)
-    '        offsetIndex = searchIndex + searchString.Length
-    '    End While
-    'End Function
+        For index As Integer = startIndex To value.Length - 1
+            length += 1
+            If value(index).ToString.Equals(stringPair.StartString) Then
+                indexStack.Push(index)
+            ElseIf value(index).ToString.Equals(stringPair.EndString) Then
+                indexStack.Pop()
 
-    <Extension()>
+                If indexStack.Count = 0 Then
+                    Exit For
+                End If
+            End If
+        Next
+
+        If startIndex > -1 And length > 0 Then
+            Return value.Substring(startIndex, length)
+        End If
+    End Function
+
+    <Extension>
     Public Function SubstringCount(ByVal value As String, ByVal searchStringStart As String, Optional ByVal searchStringEnd As String = "") As Integer
         SubstringCount = 0
 

@@ -22,6 +22,7 @@
 
     Public Sub ShowStatus(ByVal messageSource As String, Optional ByVal messageArgs As String() = Nothing)
         Main.lblStatus.Text = FormatMessage(messageSource, messageArgs)
+        Main.pbProgress.Value = 0
     End Sub
 
     Public Sub ShowStatus(ByVal messageSource As String, ByVal progressMinimum As Integer, ByVal progressMaximum As Integer, Optional ByVal messageArgs As String() = Nothing)

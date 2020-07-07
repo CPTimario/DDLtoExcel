@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Object Classes\Column.vb" />
-    <Compile Include="Utility Modules\CommandExtraction.vb" />
+    <Compile Include="Utility Modules\SQLCommand.vb" />
     <Compile Include="Utility Modules\General.vb" />
     <Compile Include="Main.vb">
       <SubType>Form</SubType>
