@@ -20,11 +20,11 @@
     '---------
     ' Methods
     '---------
-    Public Sub AddConstraint(ByVal type As ConstraintType, Optional ByVal addlClauses As String() = Nothing)
+    Public Sub AddConstraint(ByVal type As Constraint._Type, Optional ByVal addlClauses As String() = Nothing)
         If Not Constraints.Exists(Function(ct) ct.Type = type) Then
-            If type = ConstraintType.ctFOREIGN Then
+            If type = Constraint._Type._FOREIGN Then
                 Constraints.Add(New Constraint(type, addlClauses(0), addlClauses(1)))
-            ElseIf type = ConstraintType.ctCHECK Then
+            ElseIf type = Constraint._Type._CHECK Then
                 Constraints.Add(New Constraint(type, addlClauses(0)))
             Else
                 Constraints.Add(New Constraint(type))

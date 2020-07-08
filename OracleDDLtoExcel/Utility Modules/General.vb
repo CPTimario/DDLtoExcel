@@ -1,35 +1,11 @@
-﻿Public Module General
-    '------------
-    ' Constants
-    '------------
-    Public Const TABLE_SYNTAX As String = "(TABLE\s+)\""*\w+\""*\s*\(\s*(" & COLUMN_SYNTAX & ")*\,*\s*)+\)"
-    Public Const COLUMN_SYNTAX As String = "\""*\w+\""*\s*\w+(\s*\(\s*\d+\s*\,*\s*\w*\s*\))*"
+﻿Imports System.Runtime.CompilerServices
+Imports OracleDDLtoExcel
+
+Public Module General
     '-----------
     ' Variables
     '-----------
     Public CancelFlg As Boolean = False
-    Public Tables As List(Of Table)
-    Public SqlComments As New List(Of StringPair)(
-        {
-            New StringPair("--", vbLf),
-            New StringPair("/*", "*/")
-        })
-    Public Parenthesis As New StringPair("(", ")")
-    Public DDLCommands As New Dictionary(Of DDLCommand, String) From {
-        {DDLCommand.ddlCREATE, "CREATE "},
-        {DDLCommand.ddlALTER, "ALTER "},
-        {DDLCommand.ddlDROP, "DROP "},
-        {DDLCommand.ddlCOMMENT_ON_COLUMN, "COMMENT ON COLUMN"}
-    }
-    Public DDLCreateDropObjects As New Dictionary(Of DDLCreateDropObject, String) From {
-        {DDLCreateDropObject.crdrTABLE, "TABLE "},
-        {DDLCreateDropObject.crdrVIEW, "VIEW "},
-        {DDLCreateDropObject.crdrINDEX, "INDEX "}
-    }
-    Public DDLAlterObjects As New Dictionary(Of DDLAlterObject, String) From {
-        {DDLAlterObject.altTABLE, "TABLE "},
-        {DDLAlterObject.altVIEW, "VIEW "}
-    }
 
     Public Structure StringPair
         Public StartString As String
@@ -41,62 +17,75 @@
         End Sub
     End Structure
 
+    Public Structure DataType
+        Public Const ENUM_PREFIX As String = "dt"
+
+        Public Enum _Type
+            _CHAR
+            _VARCHAR2
+            _NCHAR
+            _NVARCHAR2
+            _LONG
+            _NUMBER
+            _DATE
+        End Enum
+
+        Public Type As _Type
+        Public Arguments As String
+
+        Public Sub New(ByVal type As _Type, Optional ByVal arguments As String = "")
+            Me.Type = type
+            Me.Arguments = arguments
+        End Sub
+    End Structure
+
     Public Structure Constraint
-        Public Type As ConstraintType
+        Public Const ENUM_PREFIX As String = "ct"
+
+        Public Enum _Type
+            _NOT_NULL
+            _PRIMARY
+            _UNIQUE
+            _FOREIGN
+            _CHECK
+        End Enum
+
+        Public Type As _Type
         Public Expression As String
         Public Reference As KeyValuePair(Of String, String)
 
-        Public Sub New(ByVal type As ConstraintType)
+        Public Sub New(ByVal type As _Type)
             Me.Type = type
         End Sub
 
-        Public Sub New(ByVal type As ConstraintType, ByVal refTable As String, ByVal refColumn As String)
+        Public Sub New(ByVal type As _Type, ByVal refTable As String, ByVal refColumn As String)
             Me.Type = type
             Me.Reference = New KeyValuePair(Of String, String)(refTable, refColumn)
         End Sub
 
-        Public Sub New(ByVal type As ConstraintType, ByVal expression As String)
+        Public Sub New(ByVal type As _Type, ByVal expression As String)
             Me.Type = type
             Me.Expression = expression
         End Sub
     End Structure
 
-    '--------------
-    ' Enumerations
-    '--------------
-    Public Enum ConstraintType
-        ctNOTNULL
-        ctPRIMARY
-        ctUNIQUE
-        ctFOREIGN
-        ctCHECK
-    End Enum
+    '-----------
+    ' Functions
+    '-----------
+    <Extension>
+    Public Function EnumToString(ByVal value As [Enum]) As String
+        Return value.ToString("F").Replace(Chr(95), Chr(32)).Trim
+    End Function
 
-    Public Enum DataType
-        dtCHAR
-        dtVARCHAR2
-        dtNCHAR
-        dtNVARCHAR2
-        dtLONG
-        dtNUMBER
-        dtDATE
-    End Enum
+    <Extension>
+    Public Function GetKeywordRegex(ByVal keywordEnum As [Enum], Optional ByVal regexPrefix As String = "", Optional ByVal regexSuffix As String = "") As String
+        Dim regex As String = String.Empty
+        Dim keywordString As String = keywordEnum.EnumToString()
 
-    Public Enum DDLCommand
-        ddlCREATE
-        ddlALTER
-        ddlDROP
-        ddlCOMMENT_ON_COLUMN
-    End Enum
+        For Each keyword As String In keywordString.Split(Chr(32))
+            regex &= regexPrefix & "(" & keyword.ToUpper & "|" & keyword.ToLower & ")" & regexSuffix
+        Next
 
-    Public Enum DDLCreateDropObject
-        crdrTABLE
-        crdrVIEW
-        crdrINDEX
-    End Enum
-
-    Public Enum DDLAlterObject
-        altTABLE
-        altVIEW
-    End Enum
+        Return regex
+    End Function
 End Module

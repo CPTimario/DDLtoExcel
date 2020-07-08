@@ -13,7 +13,7 @@ Public Class Main
 
     Private Sub btnExport_Click(sender As Object, e As EventArgs) Handles btnExport.Click
         Dim content As String
-        Dim sqlCommands As New List(Of String)
+        Dim SQL As SQL
 
         If txtTitle.Text = String.Empty Then
             Message.Show(Message.INPUT, MessageBoxIcon.Error, MessageBoxButtons.OK, txtTitle, New String() {"title"})
@@ -25,13 +25,12 @@ Public Class Main
 
             content = File.ReadAllText(txtFile.Text)
 
-            content = content.RemoveComments()
+            SQL = New SQL(content)
+
+            Call SQL.RemoveComments()
             If CancelFlg Then Exit Sub
 
-            sqlCommands = content.GetSQLCommands()
-            If CancelFlg Then Exit Sub
-
-            Call ExecuteCommands(sqlCommands)
+            Call SQL.ExecuteCommands()
 
             Call ShowStatus(SUCCESS)
             Call EnableFormComponents(True)
