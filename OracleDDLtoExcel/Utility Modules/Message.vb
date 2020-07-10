@@ -41,12 +41,10 @@
     ' Functions
     '-----------
     Private Function FormatMessage(ByVal messageSource As String, ByVal messageArgs As String())
-        Dim message As String = messageSource
-
         If messageArgs IsNot Nothing Then
-            message = String.Format(messageSource, messageArgs)
+            Return String.Format(messageSource, messageArgs)
         End If
 
-        Return message
+        Return messageSource
     End Function
 End Module

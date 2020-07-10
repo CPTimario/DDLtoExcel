@@ -21,19 +21,15 @@
     '---------
     ' Methods
     '---------
-    Public Sub AddConstraint(ByVal type As Constraint._Type, Optional ByVal addlClauses As String() = Nothing)
+    Public Sub AddConstraint(ByVal name As String, ByVal type As Constraint._Type, Optional ByVal addlClauses As List(Of String) = Nothing)
         If Not Constraints.Exists(Function(ct) ct.Type = type) Then
-            If type = Constraint._Type._FOREIGN Then
-                Constraints.Add(New Constraint(type, addlClauses(0), addlClauses(1)))
-            ElseIf type = Constraint._Type._CHECK Then
-                Constraints.Add(New Constraint(type, addlClauses(0)))
+            If type = Constraint._Type.FOREIGN_KEY Then
+                Constraints.Add(New Constraint(name, type, addlClauses.Item(0), addlClauses.Item(1)))
+            ElseIf type = Constraint._Type.CHECK Then
+                Constraints.Add(New Constraint(name, type, addlClauses.Item(0)))
             Else
-                Constraints.Add(New Constraint(type))
+                Constraints.Add(New Constraint(name, type))
             End If
         End If
-    End Sub
-
-    Public Sub AddComment(ByVal comment As String)
-        Me.Comment = comment
     End Sub
 End Class

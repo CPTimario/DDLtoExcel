@@ -18,8 +18,6 @@ Public Module General
     End Structure
 
     Public Structure DataType
-        Public Const ENUM_PREFIX As String = "dt"
-
         Public Enum _Type
             _CHAR
             _VARCHAR2
@@ -40,30 +38,32 @@ Public Module General
     End Structure
 
     Public Structure Constraint
-        Public Const ENUM_PREFIX As String = "ct"
-
         Public Enum _Type
-            _NOT_NULL
-            _PRIMARY
-            _UNIQUE
-            _FOREIGN
-            _CHECK
+            NOT_NULL
+            PRIMARY_KEY
+            UNIQUE
+            FOREIGN_KEY
+            CHECK
         End Enum
 
+        Public Name As String
         Public Type As _Type
         Public Expression As String
         Public Reference As KeyValuePair(Of String, String)
 
-        Public Sub New(ByVal type As _Type)
+        Public Sub New(ByVal name As String, ByVal type As _Type)
+            Me.Name = name
             Me.Type = type
         End Sub
 
-        Public Sub New(ByVal type As _Type, ByVal refTable As String, ByVal refColumn As String)
+        Public Sub New(ByVal name As String, ByVal type As _Type, ByVal refTable As String, ByVal refColumn As String)
+            Me.Name = name
             Me.Type = type
             Me.Reference = New KeyValuePair(Of String, String)(refTable, refColumn)
         End Sub
 
-        Public Sub New(ByVal type As _Type, ByVal expression As String)
+        Public Sub New(ByVal name As String, ByVal type As _Type, ByVal expression As String)
+            Me.Name = name
             Me.Type = type
             Me.Expression = expression
         End Sub
@@ -87,5 +87,33 @@ Public Module General
         Next
 
         Return regex
+    End Function
+
+    Public Function GetElements(ByVal value As String) As List(Of String)
+        Dim element As String = String.Empty
+        Dim parenthesis As New Stack(Of Char)
+        Dim elements As New List(Of String)
+
+        For Each character As Char In value
+            If character.Equals(Chr(40)) Then
+                parenthesis.Push(character)
+            ElseIf character.Equals(Chr(41)) Then
+                parenthesis.Pop()
+            End If
+
+            If parenthesis.Count = 0 AndAlso character.Equals(Chr(44)) Then
+                elements.Add(element.Trim)
+                element = String.Empty
+            Else
+                element &= character.ToString
+            End If
+        Next
+
+        Return elements
+    End Function
+
+    <Extension>
+    Public Function Table(ByVal tables As List(Of Table), ByVal tableName As String) As Table
+        Return tables.Find(Function(tbl) tbl.Name = tableName)
     End Function
 End Module

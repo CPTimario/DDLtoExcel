@@ -20,7 +20,7 @@
     '-----------
     ' Functions
     '-----------
-    Public Function GetColumn(ByVal name As String) As Column
+    Public Function Column(ByVal name As String) As Column
         Return Columns.Find(Function(col) col.Name = name)
     End Function
 End Class

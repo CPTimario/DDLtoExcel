@@ -1,4 +1,5 @@
-﻿Imports System.Text.RegularExpressions
+﻿Imports System.Runtime.CompilerServices
+Imports System.Text.RegularExpressions
 
 Public Class SQL
     '-----------
@@ -43,6 +44,7 @@ Public Class SQL
         COLUMN_NAME
         DATA_TYPE
         ARGUMENTS
+        AUTO_DEFAULT
         DEFAULT_VALUE
     End Enum
 
@@ -53,14 +55,61 @@ Public Class SQL
         COMMENT
     End Enum
 
+    Private Enum NotNullGroup
+        NONE
+        TABLE_NAME
+        COLUMN_NAME
+        CONSTRAINT_NAME
+    End Enum
+
+    Private Enum PrimaryKeyGroup
+        NONE
+        TABLE_NAME
+        CONSTRAINT_NAME
+        COLUMN_LIST
+    End Enum
+
+    Private Enum UniqueGroup
+        NONE
+        TABLE_NAME
+        CONSTRAINT_NAME
+        COLUMN_LIST
+    End Enum
+
+    Private Enum ForeignGroup
+        NONE
+        TABLE_NAME
+        CONSTRAINT_NAME
+        COLUMN_LIST
+        REF_TABLE_NAME
+        REF_COLUMN_LIST
+    End Enum
+
+    Private Enum CheckGroup
+        NONE
+        TABLE_NAME
+        CONSTRAINT_NAME
+        COLUMN_NAME
+        CONDITION
+    End Enum
+
     '-----------
     ' Structure
     '-----------
     Private Structure CreateTableRegex
         Const TABLE_NAME As String = "(?<=CREATE\sTABLE\s)(?:[\""\']?(\w+)[\""\']?\.)?[\""\']*(\w+)[\""\']?"
-        Const COLUMN_LIST As String = "\(\s*(" & COLUMN & "[\s\,]+)+\)"
-        Const COLUMN As String = "[\""\']?(\w+)[\""\']?\s+(\w+)\s*(\([\w\s\,]+\))?\s*(?:DEFAULT\s+(\w+))?"
+        Const COLUMN_LIST As String = "(?<=\()\s*(" & COLUMN & "[\s\,]+)+"
+        Const COLUMN As String = "[\""\']?(\w+)[\""\']?\s+(\w+)\s*(\([\w\s\,]+\))?\s*((?:DEFAULT\s+([\w\'\""]+))|(?:AUTO INCREMENT))?"
         Const COLUMN_COMMENT As String = "[\""\']?(\w+)[\""\']?\.[\""\']?(\w+)[\""\']?\s+IS\s+[\""\']?([\w一-龠ぁ-ゔァ-ヴーａ-ｚＡ-Ｚ０-９々〆〤]+)[\""\']?"
+    End Structure
+
+    Private Structure AlterTableRegex
+        Const COLUMN_LIST = "\(\s*((?:[\""\']?\w+[\""\']?\,*\s*)+)\s*\)"
+        Const NOT_NULL = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+MODIFY\s*\([\""\']?(\w+)[\""\']?\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+NOT\s+NULL\s+ENABLE\s*\)"
+        Const PRIMARY_KEY = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+ADD\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+PRIMARY\s+KEY\s*" & COLUMN_LIST & "\s*ENABLE"
+        Const UNIQUE = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+ADD\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+UNIQUE\s*" & COLUMN_LIST & "\s*ENABLE"
+        Const CHECK = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+ADD\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+CHECK\s*\(\s*[\""\']?(\w+)[\""\']?(.+)\)"
+        Const FOREIGN_KEY = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+ADD\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+FOREIGN\s+KEY\s*" & COLUMN_LIST & "\s*REFERENCES\s+[\""\']?(\w+)[\""\']?\s*" & COLUMN_LIST & "\s+ENABLE"
     End Structure
 
     '-------------
@@ -149,7 +198,7 @@ Public Class SQL
 
         tableGroups = Regex.Match(command, CreateTableRegex.TABLE_NAME).Groups
         tableName = tableGroups.Item(TableGroup.TABLE_NAME).ToString
-        columns = GetColumns(Regex.Match(command, CreateTableRegex.COLUMN_LIST).Value)
+        columns = GetColumns(Regex.Match(command, CreateTableRegex.COLUMN_LIST).ToString.Trim)
 
         table = New Table(tableName, columns)
         Tables.Add(table)
@@ -159,7 +208,6 @@ Public Class SQL
         Dim tableName As String
         Dim columnName As String
         Dim comment As String
-        Dim table As Table
         Dim commentGroups As GroupCollection
 
         commentGroups = Regex.Match(command, CreateTableRegex.COLUMN_COMMENT).Groups
@@ -167,9 +215,100 @@ Public Class SQL
         columnName = commentGroups.Item(ColumnCommentGroup.COLUMN_NAME).ToString
         comment = commentGroups.Item(ColumnCommentGroup.COMMENT).ToString
 
-        table = Tables.Find(Function(tbl) tbl.Name = tableName)
-        Call table.GetColumn(columnName).AddComment(comment)
+        Tables.Table(tableName).Column(columnName).Comment = comment
     End Sub
+
+    Public Sub AlterTable(ByVal command As String)
+        For Each constraintType As Constraint._Type In [Enum].GetValues(GetType(Constraint._Type))
+            If command.Contains(constraintType.EnumToString) Then
+                AddConstraint(constraintType, command)
+            End If
+        Next
+    End Sub
+
+    Private Sub AddConstraint(ByVal constraintType As Constraint._Type, ByVal command As String)
+        Dim constraintGroups As GroupCollection
+
+        Select Case constraintType
+            Case Constraint._Type.NOT_NULL
+                constraintGroups = Regex.Match(command, AlterTableRegex.NOT_NULL, RegexOptions.IgnoreCase).Groups
+                Call AddNotNullConstraint(constraintGroups)
+
+            Case Constraint._Type.PRIMARY_KEY
+                constraintGroups = Regex.Match(command, AlterTableRegex.PRIMARY_KEY, RegexOptions.IgnoreCase).Groups
+                Call AddPrimaryKeyConstraint(constraintGroups)
+
+            Case Constraint._Type.UNIQUE
+                constraintGroups = Regex.Match(command, AlterTableRegex.UNIQUE, RegexOptions.IgnoreCase).Groups
+                Call AddUniqueConstraint(constraintGroups)
+
+            Case Constraint._Type.FOREIGN_KEY
+                constraintGroups = Regex.Match(command, AlterTableRegex.FOREIGN_KEY, RegexOptions.IgnoreCase).Groups
+                Call AddForeignKeyConstraint(constraintGroups)
+
+            Case Constraint._Type.CHECK
+                constraintGroups = Regex.Match(command, AlterTableRegex.CHECK, RegexOptions.IgnoreCase).Groups
+                Call AddCheckConstraint(constraintGroups)
+        End Select
+    End Sub
+
+    Private Sub AddNotNullConstraint(ByVal constraintGroups As GroupCollection)
+        Dim constraintName As String = constraintGroups.Item(NotNullGroup.CONSTRAINT_NAME).ToString
+        Dim tableName As String = constraintGroups.Item(NotNullGroup.TABLE_NAME).ToString
+        Dim columnName As String = constraintGroups.Item(NotNullGroup.COLUMN_NAME).ToString
+
+        Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.NOT_NULL)
+    End Sub
+
+    Private Sub AddPrimaryKeyConstraint(ByVal constraintGroups As GroupCollection)
+        Dim constraintName As String = constraintGroups.Item(PrimaryKeyGroup.CONSTRAINT_NAME).ToString
+        Dim tableName As String = constraintGroups.Item(PrimaryKeyGroup.TABLE_NAME).ToString
+        Dim columnList As List(Of String) = GetElements(constraintGroups.Item(PrimaryKeyGroup.COLUMN_LIST).ToString)
+
+        For Each columnName As String In columnList
+            columnName = columnName.Replace(Chr(34), String.Empty)
+            Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.PRIMARY_KEY)
+        Next
+    End Sub
+
+    Private Sub AddUniqueConstraint(ByVal constraintGroups As GroupCollection)
+        Dim constraintName As String = constraintGroups.Item(UniqueGroup.CONSTRAINT_NAME).ToString
+        Dim tableName As String = constraintGroups.Item(UniqueGroup.TABLE_NAME).ToString
+        Dim columnList As List(Of String) = GetElements(constraintGroups.Item(UniqueGroup.COLUMN_LIST).ToString)
+
+        For Each columnName As String In columnList
+            columnName = columnName.Replace(Chr(34), String.Empty)
+            Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.UNIQUE)
+        Next
+    End Sub
+
+    Private Sub AddForeignKeyConstraint(ByVal constraintGroups As GroupCollection)
+        Dim constraintName As String = constraintGroups.Item(ForeignGroup.CONSTRAINT_NAME).ToString
+        Dim tableName As String = constraintGroups.Item(ForeignGroup.TABLE_NAME).ToString
+        Dim columnList As List(Of String) = GetElements(constraintGroups.Item(ForeignGroup.COLUMN_LIST).ToString)
+        Dim refTableName As String = constraintGroups.Item(ForeignGroup.REF_TABLE_NAME).ToString
+        Dim refColumnList As List(Of String) = GetElements(constraintGroups.Item(ForeignGroup.REF_COLUMN_LIST).ToString)
+        Dim addlClause As List(Of String)
+
+        For Each columnName As String In columnList
+            addlClause = New List(Of String)
+            addlClause.Add(tableName)
+            addlClause.Add(refColumnList.Item(columnList.IndexOf(columnName)))
+            columnName = columnName.Replace(Chr(34), String.Empty)
+            Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.FOREIGN_KEY, addlClause)
+        Next
+    End Sub
+
+    Private Sub AddCheckConstraint(ByVal constraintGroups As GroupCollection)
+        Dim constraintName As String = constraintGroups.Item(CheckGroup.CONSTRAINT_NAME).ToString
+        Dim tableName As String = constraintGroups.Item(CheckGroup.TABLE_NAME).ToString
+        Dim columnName As String = constraintGroups.Item(CheckGroup.COLUMN_NAME).ToString
+        Dim condition As String = constraintGroups.Item(CheckGroup.CONDITION).ToString
+        Dim addlClause As New List(Of String)({condition})
+
+        Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.CHECK, addlClause)
+    End Sub
+
     '------------
     ' Functions
     '------------
@@ -193,17 +332,32 @@ Public Class SQL
         Return methodName
     End Function
 
-    Private Function GetColumns(ByVal columnList As String) As List(Of Column)
+    Private Function GetColumns(ByVal command As String) As List(Of Column)
         Dim columns As New List(Of Column)
-        Dim columnMatches As MatchCollection = Regex.Matches(columnList, CreateTableRegex.COLUMN)
+        Dim columnList As List(Of String)
+        Dim columnGroups As GroupCollection
+        Dim column As Column
+        Dim dataType As DataType
+        Dim columnName As String
+        Dim dataTypeString As String
+        Dim dataTypeArgs As String
+        Dim autoDefault As String
+        Dim defaultValue As String
 
-        For Each match As Match In columnMatches
-            Dim column As Column
-            Dim dataType As DataType
-            Dim columnName As String = match.Groups.Item(ColumnGroup.COLUMN_NAME).ToString
-            Dim dataTypeString As String = match.Groups.Item(ColumnGroup.DATA_TYPE).ToString
-            Dim dataTypeArgs As String = match.Groups.Item(ColumnGroup.ARGUMENTS).ToString
-            Dim defaultValue As String = match.Groups.Item(ColumnGroup.DEFAULT_VALUE).ToString
+        columnList = GetElements(command)
+        For Each columnString As String In columnList
+            columnGroups = Regex.Match(columnString, CreateTableRegex.COLUMN).Groups
+
+            columnName = columnGroups(ColumnGroup.COLUMN_NAME).ToString
+            dataTypeString = columnGroups(ColumnGroup.DATA_TYPE).ToString
+            dataTypeArgs = columnGroups(ColumnGroup.ARGUMENTS).ToString
+            autoDefault = columnGroups(ColumnGroup.AUTO_DEFAULT).ToString
+
+            If autoDefault.Contains("DEFAULT") Then
+                defaultValue = columnGroups(ColumnGroup.DEFAULT_VALUE).ToString
+            Else
+                defaultValue = columnGroups(ColumnGroup.AUTO_DEFAULT).ToString
+            End If
 
             dataType = GetDataType(dataTypeString, dataTypeArgs)
             column = New Column(columnName, dataType, defaultValue)
