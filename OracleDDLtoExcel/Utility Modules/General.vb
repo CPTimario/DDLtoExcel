@@ -5,7 +5,7 @@ Public Module General
     '-----------
     ' Variables
     '-----------
-    Public CancelFlg As Boolean = False
+    Public CancelFlg As Boolean = True
 
     Public Structure StringPair
         Public StartString As String

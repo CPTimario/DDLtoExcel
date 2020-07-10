@@ -16,4 +16,11 @@
     Public Sub AddColumn(ByVal name As String, ByVal dataType As DataType)
         Columns.Add(New Column(name, dataType))
     End Sub
+
+    '-----------
+    ' Functions
+    '-----------
+    Public Function GetColumn(ByVal name As String) As Column
+        Return Columns.Find(Function(col) col.Name = name)
+    End Function
 End Class

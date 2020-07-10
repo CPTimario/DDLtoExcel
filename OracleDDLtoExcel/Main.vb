@@ -31,6 +31,7 @@ Public Class Main
             If CancelFlg Then Exit Sub
 
             Call SQL.ExecuteCommands()
+            If CancelFlg Then Exit Sub
 
             Call ShowStatus(SUCCESS)
             Call EnableFormComponents(True)
@@ -41,17 +42,21 @@ Public Class Main
     Private Sub timDelayIdleMessage_Tick(sender As Object, e As EventArgs) Handles timDelayIdleMessage.Tick
         timDelayIdleMessage.Stop()
         Call ShowStatus(IDLE, 0)
+        Call EnableFormComponents(True)
     End Sub
 
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-        CancelFlg = True
-        Call EnableFormComponents(True)
+        If Not CancelFlg Then
+            CancelFlg = True
+            Call EnableFormComponents(True)
 
-        Call ShowStatus(CANCEL)
-        timDelayIdleMessage.Start()
+            Call ShowStatus(CANCEL)
+            timDelayIdleMessage.Start()
+        End If
     End Sub
 
     Private Sub EnableFormComponents(ByVal value As Boolean)
+        CancelFlg = value
         btnExport.Enabled = value
         btnOpen.Enabled = value
         txtTitle.Enabled = value

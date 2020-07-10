@@ -6,6 +6,7 @@
     Public DataType As DataType
     Public DefaultValue As String
     Public Constraints As List(Of Constraint)
+    Public Comment As String
 
     '-------------
     ' Constructor
@@ -30,5 +31,9 @@
                 Constraints.Add(New Constraint(type))
             End If
         End If
+    End Sub
+
+    Public Sub AddComment(ByVal comment As String)
+        Me.Comment = comment
     End Sub
 End Class

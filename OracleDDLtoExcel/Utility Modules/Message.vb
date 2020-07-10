@@ -8,7 +8,7 @@
     Public Const SUCCESS As String = "Success"
     Public Const CANCEL As String = "Cancelled"
     Public Const REMOVE_COMMENTS As String = "Removing comments ({0} of {1} comments) . . ."
-    Public Const GET_COMMANDS As String = "Getting DDL commands ({0} of {1} commands) . . ."
+    Public Const EXECUTE_COMMANDS As String = "Executing commands ({0} of {1} commands) . . ."
 
     '---------
     ' Methods
