@@ -105,7 +105,7 @@ Public Class SQL
 
     Private Structure AlterTableRegex
         Const COLUMN_LIST = "\(\s*((?:[\""\']?\w+[\""\']?\,*\s*)+)\s*\)"
-        Const NOT_NULL = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+MODIFY\s*\([\""\']?(\w+)[\""\']?\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+NOT\s+NULL\s+ENABLE\s*\)"
+        Const NOT_NULL = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+MODIFY\s*\([\""\']?(\w+)[\""\']?(?:\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?)?\s+NOT\s+NULL\s+ENABLE\s*\)"
         Const PRIMARY_KEY = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+ADD\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+PRIMARY\s+KEY\s*" & COLUMN_LIST & "\s*ENABLE"
         Const UNIQUE = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+ADD\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+UNIQUE\s*" & COLUMN_LIST & "\s*ENABLE"
         Const CHECK = "(?<=ALTER\sTABLE\s)[\""\']?(\w+)[\""\']?\s+ADD\s+CONSTRAINT\s+[\""\']?(\w+)[\""\']?\s+CHECK\s*\(\s*[\""\']?(\w+)[\""\']?(.+)\)"

@@ -31,32 +31,6 @@ Module StringUtils
         Return String.Empty
     End Function
 
-    '<Extension>
-    'Public Function Substring(ByVal value As String, ByVal stringPair As StringPair)
-    '    Dim indexStack As New Stack(Of Integer)
-    '    Dim startIndex As Integer = value.IndexOf(stringPair.StartString)
-    '    Dim length As Integer = 0
-
-    '    For index As Integer = startIndex To value.Length - 1
-    '        length += 1
-    '        If value(index).ToString.Equals(stringPair.StartString) Then
-    '            indexStack.Push(index)
-    '        ElseIf value(index).ToString.Equals(stringPair.EndString) Then
-    '            indexStack.Pop()
-
-    '            If indexStack.Count = 0 Then
-    '                Exit For
-    '            End If
-    '        End If
-    '    Next
-
-    '    If startIndex > -1 And length > 0 Then
-    '        Return value.Substring(startIndex, length)
-    '    End If
-
-    '    Return String.Empty
-    'End Function
-
     <Extension>
     Public Function SubstringCount(ByVal value As String, ByVal searchStringStart As String, Optional ByVal searchStringEnd As String = "") As Integer
         Dim count As Integer = 0
