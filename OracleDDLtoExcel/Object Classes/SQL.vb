@@ -22,6 +22,7 @@ Public Class SQL
     '--------------
     Private Enum DDLCommand
         CREATE_TABLE
+        CREATE_GLOBAL_TEMPORARY_TABLE
         CREATE_VIEW
         CREATE_INDEX
         ALTER_TABLE
@@ -97,6 +98,7 @@ Public Class SQL
     '-----------
     Private Structure CreateTableRegex
         Const TABLE_NAME As String = "(?<=CREATE\sTABLE\s)(?:[\""\']?(\w+)[\""\']?\.)?[\""\']*(\w+)[\""\']?"
+        Const GLOBAL_TEMPORARY_TABLE_NAME = "(?<=CREATE\sGLOBAL\sTEMPORARY\sTABLE\s)(?:[\""\']?(\w+)[\""\']?\.)?[\""\']*(\w+)[\""\']?"
         Const COLUMN_LIST As String = "(?<=\()\s*(" & COLUMN & "[\s\,]+)+"
         Const COLUMN As String = "[\""\']?(\w+)[\""\']?\s+(\w+)\s*(\([\w\s\,]+\))?\s*((?:DEFAULT\s+([\w\'\""]+))|(?:AUTO INCREMENT))?"
         Const COLUMN_COMMENT As String = "[\""\']?(\w+)[\""\']?\.[\""\']?(\w+)[\""\']?\s+IS\s+[\""\']?([\w一-龠ぁ-ゔァ-ヴーａ-ｚＡ-Ｚ０-９々〆〤]+)[\""\']?"
@@ -180,7 +182,7 @@ Public Class SQL
                 ddlCommandString = command.EnumToString()
                 commandRegex = command.GetKeywordRegex(String.Empty, "\s+")
                 replaceString = Chr(36) & ddlCommandString & Chr(32)
-                SQLCommandString = Regex.Replace(SQLCommandString, commandRegex, replaceString)
+                SQLCommandString = Regex.Replace(SQLCommandString, commandRegex, replaceString, RegexOptions.IgnoreCase)
             End If
         Next
 
@@ -195,6 +197,20 @@ Public Class SQL
         Dim tableGroups As GroupCollection
 
         tableGroups = Regex.Match(command, CreateTableRegex.TABLE_NAME).Groups
+        tableName = tableGroups.Item(TableGroup.TABLE_NAME).ToString
+        columns = GetColumns(Regex.Match(command, CreateTableRegex.COLUMN_LIST).ToString.Trim)
+
+        table = New Table(tableName, columns)
+        Tables.Add(table)
+    End Sub
+
+    Public Sub CreateGlobalTemporaryTable(ByVal command As String)
+        Dim table As Table
+        Dim columns As List(Of Column)
+        Dim tableName As String
+        Dim tableGroups As GroupCollection
+
+        tableGroups = Regex.Match(command, CreateTableRegex.GLOBAL_TEMPORARY_TABLE_NAME).Groups
         tableName = tableGroups.Item(TableGroup.TABLE_NAME).ToString
         columns = GetColumns(Regex.Match(command, CreateTableRegex.COLUMN_LIST).ToString.Trim)
 
