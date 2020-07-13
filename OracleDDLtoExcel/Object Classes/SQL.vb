@@ -1,5 +1,4 @@
-﻿Imports System.Runtime.CompilerServices
-Imports System.Text.RegularExpressions
+﻿Imports System.Text.RegularExpressions
 
 Public Class SQL
     '-----------
@@ -220,7 +219,7 @@ Public Class SQL
 
     Public Sub AlterTable(ByVal command As String)
         For Each constraintType As Constraint._Type In [Enum].GetValues(GetType(Constraint._Type))
-            If command.Contains(constraintType.EnumToString) Then
+            If command.Contains(constraintType.EnumToString & Chr(32)) Then
                 AddConstraint(constraintType, command)
             End If
         Next

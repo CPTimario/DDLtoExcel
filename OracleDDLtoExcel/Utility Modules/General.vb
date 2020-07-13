@@ -90,18 +90,24 @@ Public Module General
     End Function
 
     Public Function GetElements(ByVal value As String) As List(Of String)
+        Dim character As Char
         Dim element As String = String.Empty
         Dim parenthesis As New Stack(Of Char)
         Dim elements As New List(Of String)
 
-        For Each character As Char In value
+        For charIndex As Integer = 0 To value.Length - 1
+            character = value.Chars(charIndex)
+
             If character.Equals(Chr(40)) Then
                 parenthesis.Push(character)
             ElseIf character.Equals(Chr(41)) Then
                 parenthesis.Pop()
             End If
 
-            If parenthesis.Count = 0 AndAlso character.Equals(Chr(44)) Then
+            If charIndex = value.Length - 1 Then
+                element &= character.ToString
+                elements.Add(element.Trim)
+            ElseIf parenthesis.Count = 0 AndAlso character.Equals(Chr(44)) Then
                 elements.Add(element.Trim)
                 element = String.Empty
             Else
