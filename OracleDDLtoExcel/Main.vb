@@ -14,6 +14,7 @@ Public Class Main
     Private Sub btnExport_Click(sender As Object, e As EventArgs) Handles btnExport.Click
         Dim content As String
         Dim SQL As SQL
+        Dim Excel As Excel
 
         If txtTitle.Text = String.Empty Then
             Message.Show(Message.INPUT, MessageBoxIcon.Error, MessageBoxButtons.OK, txtTitle, New String() {"title"})
@@ -31,6 +32,10 @@ Public Class Main
             If CancelFlg Then Exit Sub
 
             Call SQL.ExecuteCommands()
+            If CancelFlg Then Exit Sub
+
+            Excel = New Excel(SQL.Tables, txtTitle.Text)
+            Call Excel.Export()
             If CancelFlg Then Exit Sub
 
             Call ShowStatus(SUCCESS)

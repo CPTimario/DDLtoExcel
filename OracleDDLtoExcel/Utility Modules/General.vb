@@ -26,6 +26,8 @@ Public Module General
             _LONG
             _NUMBER
             _DATE
+            _BLOB
+            _ROWID
         End Enum
 
         Public Type As _Type
@@ -106,9 +108,11 @@ Public Module General
 
             If charIndex = value.Length - 1 Then
                 element &= character.ToString
-                elements.Add(element.Trim)
+                element = element.Replace(Chr(34), String.Empty).Trim
+                elements.Add(element)
             ElseIf parenthesis.Count = 0 AndAlso character.Equals(Chr(44)) Then
-                elements.Add(element.Trim)
+                element = element.Replace(Chr(34), String.Empty).Trim
+                elements.Add(element)
                 element = String.Empty
             Else
                 element &= character.ToString

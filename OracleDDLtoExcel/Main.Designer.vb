@@ -159,7 +159,7 @@ Partial Class Main
         Me.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.Name = "Main"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "Oracle DDlL to Excel"
+        Me.Text = "Oracle DDL to Excel"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

@@ -138,6 +138,7 @@ Public Class SQL
             If CancelFlg Then Exit Sub
 
             While Not SQLCommandString.Substring(sqlComment.StartString, sqlComment.EndString) = String.Empty
+                Application.DoEvents()
                 If CancelFlg Then Exit Sub
 
                 subString = SQLCommandString.Substring(sqlComment.StartString, sqlComment.EndString)
@@ -145,7 +146,6 @@ Public Class SQL
                 SQLCommandString = SQLCommandString.Replace(subString, String.Empty).Trim()
 
                 Call ShowStatus(REMOVE_COMMENTS, progressValue, New String() {progressValue.ToString, commentCount.ToString})
-                Application.DoEvents()
             End While
         Next
     End Sub
@@ -160,14 +160,13 @@ Public Class SQL
 
         For Each command As String In SQLCommands
             progressValue += 1
-
+            Application.DoEvents()
             If CancelFlg Then Exit Sub
 
             ddlCommand = GetDDLCommandType(command)
             Call CallByName(Me, GetMethodName(ddlCommand), CallType.Method, command.Trim)
 
             Call ShowStatus(EXECUTE_COMMANDS, progressValue, New String() {progressValue.ToString, SQLCommands.Count.ToString})
-            Application.DoEvents()
         Next
     End Sub
 
@@ -291,9 +290,8 @@ Public Class SQL
 
         For Each columnName As String In columnList
             addlClause = New List(Of String)
-            addlClause.Add(tableName)
+            addlClause.Add(refTableName)
             addlClause.Add(refColumnList.Item(columnList.IndexOf(columnName)))
-            columnName = columnName.Replace(Chr(34), String.Empty)
             Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.FOREIGN_KEY, addlClause)
         Next
     End Sub
