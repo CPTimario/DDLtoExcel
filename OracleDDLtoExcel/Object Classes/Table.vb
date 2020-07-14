@@ -1,6 +1,7 @@
 ﻿Public Class Table
     Public Name As String
     Public Columns As List(Of Column)
+    Public Comment As String
 
     '-------------
     ' Constructor

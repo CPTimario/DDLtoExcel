@@ -13,7 +13,7 @@ Public Module General
             _VARCHAR2
             _NCHAR
             _NVARCHAR2
-            _LONG
+            _LONG_RAW
             _NUMBER
             _DATE
             _BLOB
@@ -70,13 +70,13 @@ Public Module General
     End Function
 
     <Extension>
-    Public Function GetKeywordRegex(ByVal keywordEnum As [Enum], Optional ByVal regexPrefix As String = "", Optional ByVal regexSuffix As String = "") As String
-        Dim regex As String = String.Empty
+    Public Function ToRegex(ByVal keywordEnum As [Enum], Optional ByVal regexPrefix As String = "", Optional ByVal regexSuffix As String = "") As String
+        Dim regex As String
         Dim keywordString As String = keywordEnum.EnumToString()
 
-        For Each keyword As String In keywordString.Split(Chr(32))
-            regex &= regexPrefix & "(" & keyword.ToUpper & "|" & keyword.ToLower & ")" & regexSuffix
-        Next
+        regex = regexPrefix
+        regex &= keywordString.Replace(Chr(32), "\s+")
+        regex &= regexSuffix
 
         Return regex
     End Function
