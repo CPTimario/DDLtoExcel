@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Object Classes\Column.vb" />
-    <Compile Include="Object Classes\SQL.vb" />
+    <Compile Include="Utility Modules\SQL.vb" />
     <Compile Include="Object Classes\Excel.vb" />
     <Compile Include="Utility Modules\General.vb" />
     <Compile Include="Main.vb">
@@ -101,7 +101,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Utility Modules\String.vb" />
     <Compile Include="Object Classes\Table.vb" />
   </ItemGroup>
   <ItemGroup>

@@ -17,9 +17,9 @@ Public Class Main
         Dim Excel As Excel
 
         If txtTitle.Text = String.Empty Then
-            Message.Show(Message.INPUT, MessageBoxIcon.Error, MessageBoxButtons.OK, txtTitle, New String() {"title"})
+            Message.Show(INPUT_ERROR, MessageBoxIcon.Error, MessageBoxButtons.OK, txtTitle, New String() {"title"})
         ElseIf txtFile.Text = String.Empty Then
-            Message.Show(Message.CHOOSE, MessageBoxIcon.Error, MessageBoxButtons.OK, txtFile, New String() {"file"})
+            Message.Show(CHOOSE_ERROR, MessageBoxIcon.Error, MessageBoxButtons.OK, txtFile, New String() {"file"})
         Else
             CancelFlg = False
             Call EnableFormComponents(False)
@@ -27,9 +27,6 @@ Public Class Main
             content = File.ReadAllText(txtFile.Text)
 
             SQL = New SQL(content)
-
-            Call SQL.RemoveComments()
-            If CancelFlg Then Exit Sub
 
             Call SQL.ExecuteCommands()
             If CancelFlg Then Exit Sub

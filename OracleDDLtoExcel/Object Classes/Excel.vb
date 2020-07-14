@@ -29,7 +29,7 @@ Class Excel
 
         Call CreateSummarySheet(xlWorksheet, Title)
 
-        Call ShowStatus(CREATING_SUMMARY_SHEET, tableCounter, Tables.Count, New String() {tableCounter.ToString, Tables.Count.ToString})
+        Call ShowStatus(CREATING_TABLE_SHEET, tableCounter, Tables.Count, New String() {String.Empty, tableCounter.ToString, Tables.Count.ToString})
 
         For Each table As Table In Tables
             Application.DoEvents()

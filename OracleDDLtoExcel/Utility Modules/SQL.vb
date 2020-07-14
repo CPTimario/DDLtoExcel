@@ -5,17 +5,12 @@ Public Class SQL
     ' Variables
     '-----------
     Public Tables As List(Of Table)
-    Private SQLCommandString As String
     Private SQLCommands As List(Of String)
 
     '-----------
     ' Constants
     '-----------
-    Private SQL_COMMENTS As New List(Of StringPair)(
-        {
-            New StringPair("--", vbLf),
-            New StringPair("/*", "*/")
-        })
+    Private Const COMMENT_REGEX As String = "(?:--[^\n]*)|(?:\/\*[^\*\/]*\*\/)"
 
     '--------------
     ' Enumerations
@@ -117,78 +112,64 @@ Public Class SQL
     ' Constructor
     '-------------
     Public Sub New(ByVal command As String)
-        SQLCommandString = command
-        SQLCommands = New List(Of String)
         Tables = New List(Of Table)
+        SQLCommands = New List(Of String)
+
+        command = Regex.Replace(command, COMMENT_REGEX, String.Empty, RegexOptions.IgnoreCase)
+        SQLCommands = GetSQLCommands(command)
     End Sub
 
     '---------
     ' Methods
     '---------
-    Public Sub RemoveComments()
-        Dim commentCount As Integer = 0
-        Dim progressValue As Integer = 0
-        Dim subString As String
-
-        For Each comment As StringPair In SQL_COMMENTS
-            commentCount += SQLCommandString.SubstringCount(comment.StartString, comment.EndString)
-        Next
-
-        Call ShowStatus(REMOVE_COMMENTS, progressValue, commentCount, New String() {progressValue.ToString, commentCount.ToString})
-
-        For Each sqlComment As StringPair In SQL_COMMENTS
-            If CancelFlg Then Exit Sub
-
-            While Not SQLCommandString.Substring(sqlComment.StartString, sqlComment.EndString) = String.Empty
-                Application.DoEvents()
-                If CancelFlg Then Exit Sub
-
-                subString = SQLCommandString.Substring(sqlComment.StartString, sqlComment.EndString)
-                progressValue += SQLCommandString.SubstringCount(subString)
-                SQLCommandString = SQLCommandString.Replace(subString, String.Empty).Trim()
-
-                Call ShowStatus(REMOVE_COMMENTS, progressValue, New String() {progressValue.ToString, commentCount.ToString})
-            End While
-        Next
-    End Sub
-
     Public Sub ExecuteCommands()
         Dim ddlCommand As DDLCommand
+        Dim methodName As String
         Dim progressValue As Integer = 0
-
-        Call GetSQLCommands()
 
         Call ShowStatus(EXECUTE_COMMANDS, progressValue, SQLCommands.Count, New String() {progressValue.ToString, SQLCommands.Count.ToString})
 
-        For Each command As String In SQLCommands
+        For Each sqlCommand As String In SQLCommands
             progressValue += 1
             Application.DoEvents()
             If CancelFlg Then Exit Sub
 
-            ddlCommand = GetDDLCommandType(command)
-            Call CallByName(Me, GetMethodName(ddlCommand), CallType.Method, command.Trim)
+            For Each command As DDLCommand In [Enum].GetValues(GetType(DDLCommand))
+                If sqlCommand.Contains(command.EnumToString()) Then
+                    ddlCommand = command
+                End If
+            Next
+
+            methodName = ddlCommand.EnumToString()
+            methodName = StrConv(methodName.ToLower, VbStrConv.ProperCase)
+            methodName = methodName.Replace(Chr(32), String.Empty)
+
+            Call CallByName(Me, methodName, CallType.Method, Command.Trim)
 
             Call ShowStatus(EXECUTE_COMMANDS, progressValue, New String() {progressValue.ToString, SQLCommands.Count.ToString})
         Next
     End Sub
 
-    Private Sub GetSQLCommands()
+    Private Function GetSQLCommands(ByVal sqlCommand As String) As List(Of String)
+        Dim sqlCommandList As List(Of String)
         Dim ddlCommandString As String
         Dim commandRegex As String
         Dim replaceString As String
 
         For Each command As DDLCommand In [Enum].GetValues(GetType(DDLCommand))
-            If SQLCommandString.Contains(command.EnumToString()) Then
+            If sqlCommand.Contains(command.EnumToString()) Then
                 ddlCommandString = command.EnumToString()
                 commandRegex = command.GetKeywordRegex(String.Empty, "\s+")
                 replaceString = Chr(36) & ddlCommandString & Chr(32)
-                SQLCommandString = Regex.Replace(SQLCommandString, commandRegex, replaceString, RegexOptions.IgnoreCase)
+                sqlCommand = Regex.Replace(sqlCommand, commandRegex, replaceString, RegexOptions.IgnoreCase)
             End If
         Next
 
-        SQLCommands = SQLCommandString.Split(Chr(36)).ToList
-        SQLCommands.Remove(String.Empty)
-    End Sub
+        sqlCommandList = sqlCommand.Split(Chr(36)).ToList
+        sqlCommandList.Remove(String.Empty)
+
+        Return sqlCommandList
+    End Function
 
     Public Sub CreateTable(ByVal command As String)
         Dim table As Table
@@ -325,26 +306,6 @@ Public Class SQL
     '------------
     ' Functions
     '------------
-    Private Function GetDDLCommandType(ByVal commandString As String) As DDLCommand
-        GetDDLCommandType = Nothing
-
-        For Each command As DDLCommand In [Enum].GetValues(GetType(DDLCommand))
-            If commandString.Contains(command.EnumToString()) Then
-                Return command
-            End If
-        Next
-    End Function
-
-    Private Function GetMethodName(ByVal command As DDLCommand) As String
-        Dim methodName As String
-
-        methodName = command.EnumToString()
-        methodName = StrConv(methodName.ToLower, VbStrConv.ProperCase)
-        methodName = methodName.Replace(Chr(32), String.Empty)
-
-        Return methodName
-    End Function
-
     Private Function GetColumns(ByVal command As String) As List(Of Column)
         Dim columns As New List(Of Column)
         Dim columnList As List(Of String)
@@ -366,7 +327,7 @@ Public Class SQL
             dataTypeArgs = columnGroups(ColumnGroup.ARGUMENTS).ToString
             autoDefault = columnGroups(ColumnGroup.AUTO_DEFAULT).ToString
 
-            If autoDefault.Contains("DEFAULT") Then
+            If autoDefault.Contains(" DEFAULT ") Then
                 defaultValue = columnGroups(ColumnGroup.DEFAULT_VALUE).ToString
             Else
                 defaultValue = columnGroups(ColumnGroup.AUTO_DEFAULT).ToString
@@ -382,6 +343,7 @@ Public Class SQL
 
     Private Function GetDataType(ByVal dataTypeString As String, Optional ByVal arguments As String = "") As DataType
         Dim dataType As DataType._Type = [Enum].Parse(GetType(DataType._Type), Chr(95) & dataTypeString)
+
         Return New DataType(dataType, arguments)
     End Function
 End Class

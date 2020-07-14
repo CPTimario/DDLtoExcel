@@ -7,16 +7,6 @@ Public Module General
     '-----------
     Public CancelFlg As Boolean = True
 
-    Public Structure StringPair
-        Public StartString As String
-        Public EndString As String
-
-        Public Sub New(ByVal startString As String, ByVal endString As String)
-            Me.StartString = startString
-            Me.EndString = endString
-        End Sub
-    End Structure
-
     Public Structure DataType
         Public Enum _Type
             _CHAR

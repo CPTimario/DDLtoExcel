@@ -2,12 +2,11 @@
     '-----------
     ' Constants
     '-----------
-    Public Const INPUT As String = "Please input {0}."
-    Public Const CHOOSE As String = "Please choose {0}."
+    Public Const INPUT_ERROR As String = "Please input {0}."
+    Public Const CHOOSE_ERROR As String = "Please choose {0}."
     Public Const IDLE As String = "Idle"
     Public Const SUCCESS As String = "Success"
     Public Const CANCEL As String = "Cancelled"
-    Public Const REMOVE_COMMENTS As String = "Removing comments ({0} of {1} comments) . . ."
     Public Const EXECUTE_COMMANDS As String = "Executing commands ({0} of {1} commands) . . ."
     Public Const CREATING_SUMMARY_SHEET As String = "Creating summary sheet ({0} of {1} tables) . . ."
     Public Const CREATING_TABLE_SHEET As String = "Creating sheet for table {0} ({1} of {2} tables) . . ."
