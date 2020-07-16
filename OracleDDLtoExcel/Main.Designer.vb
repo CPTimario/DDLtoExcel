@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Main
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,21 +20,23 @@ Partial Class Main
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.lblAppTitle = New System.Windows.Forms.Label()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.txtTitle = New System.Windows.Forms.TextBox()
-        Me.lblOpenFile = New System.Windows.Forms.Label()
-        Me.txtFile = New System.Windows.Forms.TextBox()
-        Me.btnOpen = New System.Windows.Forms.Button()
+        Me.lblSchema = New System.Windows.Forms.Label()
+        Me.txtSchema = New System.Windows.Forms.TextBox()
+        Me.btnOpenSchema = New System.Windows.Forms.Button()
         Me.btnExport = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.ofdOpenFile = New System.Windows.Forms.OpenFileDialog()
         Me.pbProgress = New System.Windows.Forms.ProgressBar()
         Me.lblStatus = New System.Windows.Forms.Label()
         Me.timDelayIdleMessage = New System.Windows.Forms.Timer(Me.components)
+        Me.btnAddSchema = New System.Windows.Forms.Button()
+        Me.btnRemoveSchema = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'lblAppTitle
@@ -54,53 +56,54 @@ Partial Class Main
         Me.lblTitle.Location = New System.Drawing.Point(12, 73)
         Me.lblTitle.Name = "lblTitle"
         Me.lblTitle.Size = New System.Drawing.Size(53, 20)
-        Me.lblTitle.TabIndex = 1
+        Me.lblTitle.TabIndex = 0
         Me.lblTitle.Text = "Title: "
         '
         'txtTitle
         '
-        Me.txtTitle.Location = New System.Drawing.Point(71, 70)
+        Me.txtTitle.Location = New System.Drawing.Point(99, 70)
         Me.txtTitle.Name = "txtTitle"
-        Me.txtTitle.Size = New System.Drawing.Size(565, 26)
-        Me.txtTitle.TabIndex = 2
+        Me.txtTitle.Size = New System.Drawing.Size(537, 26)
+        Me.txtTitle.TabIndex = 0
         '
-        'lblOpenFile
+        'lblSchema
         '
-        Me.lblOpenFile.AutoSize = True
-        Me.lblOpenFile.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblOpenFile.Location = New System.Drawing.Point(14, 105)
-        Me.lblOpenFile.Name = "lblOpenFile"
-        Me.lblOpenFile.Size = New System.Drawing.Size(43, 20)
-        Me.lblOpenFile.TabIndex = 3
-        Me.lblOpenFile.Text = "File:"
+        Me.lblSchema.AutoSize = True
+        Me.lblSchema.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblSchema.Location = New System.Drawing.Point(14, 105)
+        Me.lblSchema.Name = "lblSchema"
+        Me.lblSchema.Size = New System.Drawing.Size(79, 20)
+        Me.lblSchema.TabIndex = 0
+        Me.lblSchema.Text = "Schema:"
         '
-        'txtFile
+        'txtSchema
         '
-        Me.txtFile.Location = New System.Drawing.Point(71, 102)
-        Me.txtFile.Name = "txtFile"
-        Me.txtFile.ReadOnly = True
-        Me.txtFile.Size = New System.Drawing.Size(501, 26)
-        Me.txtFile.TabIndex = 4
+        Me.txtSchema.Location = New System.Drawing.Point(99, 102)
+        Me.txtSchema.Name = "txtSchema"
+        Me.txtSchema.ReadOnly = True
+        Me.txtSchema.Size = New System.Drawing.Size(437, 26)
+        Me.txtSchema.TabIndex = 0
+        Me.txtSchema.TabStop = False
         '
-        'btnOpen
+        'btnOpenSchema
         '
-        Me.btnOpen.AutoSize = True
-        Me.btnOpen.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.btnOpen.Location = New System.Drawing.Point(578, 100)
-        Me.btnOpen.Name = "btnOpen"
-        Me.btnOpen.Size = New System.Drawing.Size(58, 30)
-        Me.btnOpen.TabIndex = 5
-        Me.btnOpen.Text = "Open"
-        Me.btnOpen.UseVisualStyleBackColor = True
+        Me.btnOpenSchema.AutoSize = True
+        Me.btnOpenSchema.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.btnOpenSchema.Location = New System.Drawing.Point(542, 100)
+        Me.btnOpenSchema.Name = "btnOpenSchema"
+        Me.btnOpenSchema.Size = New System.Drawing.Size(58, 30)
+        Me.btnOpenSchema.TabIndex = 1
+        Me.btnOpenSchema.Text = "Open"
+        Me.btnOpenSchema.UseVisualStyleBackColor = True
         '
         'btnExport
         '
         Me.btnExport.AutoSize = True
         Me.btnExport.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.btnExport.Location = New System.Drawing.Point(241, 144)
+        Me.btnExport.Location = New System.Drawing.Point(249, 182)
         Me.btnExport.Name = "btnExport"
         Me.btnExport.Size = New System.Drawing.Size(65, 30)
-        Me.btnExport.TabIndex = 6
+        Me.btnExport.TabIndex = 4
         Me.btnExport.Text = "Export"
         Me.btnExport.UseVisualStyleBackColor = True
         '
@@ -108,10 +111,10 @@ Partial Class Main
         '
         Me.btnCancel.AutoSize = True
         Me.btnCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.btnCancel.Location = New System.Drawing.Point(337, 144)
+        Me.btnCancel.Location = New System.Drawing.Point(337, 182)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(68, 30)
-        Me.btnCancel.TabIndex = 7
+        Me.btnCancel.TabIndex = 5
         Me.btnCancel.Text = "Cancel"
         Me.btnCancel.UseVisualStyleBackColor = True
         '
@@ -122,36 +125,61 @@ Partial Class Main
         '
         'pbProgress
         '
-        Me.pbProgress.Location = New System.Drawing.Point(12, 189)
+        Me.pbProgress.Location = New System.Drawing.Point(12, 223)
         Me.pbProgress.Name = "pbProgress"
         Me.pbProgress.Size = New System.Drawing.Size(624, 23)
-        Me.pbProgress.TabIndex = 8
+        Me.pbProgress.TabIndex = 0
         '
         'lblStatus
         '
         Me.lblStatus.AutoSize = True
-        Me.lblStatus.Location = New System.Drawing.Point(12, 215)
+        Me.lblStatus.Location = New System.Drawing.Point(12, 249)
         Me.lblStatus.Name = "lblStatus"
         Me.lblStatus.Size = New System.Drawing.Size(35, 20)
-        Me.lblStatus.TabIndex = 9
+        Me.lblStatus.TabIndex = 0
         Me.lblStatus.Text = "Idle"
         '
         'timDelayIdleMessage
         '
         Me.timDelayIdleMessage.Interval = 3000
         '
+        'btnAddSchema
+        '
+        Me.btnAddSchema.AutoSize = True
+        Me.btnAddSchema.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.btnAddSchema.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.btnAddSchema.Location = New System.Drawing.Point(274, 134)
+        Me.btnAddSchema.Name = "btnAddSchema"
+        Me.btnAddSchema.Size = New System.Drawing.Size(111, 30)
+        Me.btnAddSchema.TabIndex = 3
+        Me.btnAddSchema.Text = "Add Schema"
+        Me.btnAddSchema.UseVisualStyleBackColor = True
+        '
+        'btnRemoveSchema
+        '
+        Me.btnRemoveSchema.BackgroundImage = Global.OracleDDLtoExcel.My.Resources.Resources.trash
+        Me.btnRemoveSchema.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.btnRemoveSchema.Enabled = False
+        Me.btnRemoveSchema.Location = New System.Drawing.Point(606, 100)
+        Me.btnRemoveSchema.Name = "btnRemoveSchema"
+        Me.btnRemoveSchema.Size = New System.Drawing.Size(30, 30)
+        Me.btnRemoveSchema.TabIndex = 2
+        Me.btnRemoveSchema.UseVisualStyleBackColor = True
+        '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(648, 240)
+        Me.ClientSize = New System.Drawing.Size(648, 277)
+        Me.Controls.Add(Me.btnRemoveSchema)
+        Me.Controls.Add(Me.btnAddSchema)
         Me.Controls.Add(Me.lblStatus)
         Me.Controls.Add(Me.pbProgress)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnExport)
-        Me.Controls.Add(Me.btnOpen)
-        Me.Controls.Add(Me.txtFile)
-        Me.Controls.Add(Me.lblOpenFile)
+        Me.Controls.Add(Me.btnOpenSchema)
+        Me.Controls.Add(Me.txtSchema)
+        Me.Controls.Add(Me.lblSchema)
         Me.Controls.Add(Me.txtTitle)
         Me.Controls.Add(Me.lblTitle)
         Me.Controls.Add(Me.lblAppTitle)
@@ -171,13 +199,15 @@ Partial Class Main
     Friend WithEvents lblAppTitle As Label
     Friend WithEvents lblTitle As Label
     Friend WithEvents txtTitle As TextBox
-    Friend WithEvents lblOpenFile As Label
-    Friend WithEvents txtFile As TextBox
-    Friend WithEvents btnOpen As Button
+    Friend WithEvents lblSchema As Label
+    Friend WithEvents txtSchema As TextBox
+    Friend WithEvents btnOpenSchema As Button
     Friend WithEvents btnExport As Button
     Friend WithEvents btnCancel As Button
     Friend WithEvents ofdOpenFile As OpenFileDialog
     Friend WithEvents pbProgress As ProgressBar
     Friend WithEvents lblStatus As Label
     Friend WithEvents timDelayIdleMessage As Timer
+    Friend WithEvents btnAddSchema As Button
+    Friend WithEvents btnRemoveSchema As Button
 End Class

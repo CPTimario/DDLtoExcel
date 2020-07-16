@@ -7,6 +7,23 @@ Public Module General
     '-----------
     Public CancelFlg As Boolean = True
 
+    '------------
+    ' Structures
+    '------------
+    Public Structure SchemaFormControls
+        Property Label As Label
+        Property Textbox As TextBox
+        Property Open As Button
+        Property Remove As Button
+
+        Public Sub New(ByVal label As Label, ByVal textbox As TextBox, ByVal open As Button, ByVal remove As Button)
+            Me.Label = label
+            Me.Textbox = textbox
+            Me.Open = open
+            Me.Remove = remove
+        End Sub
+    End Structure
+
     Public Structure DataType
         Public Enum _Type
             _CHAR
@@ -41,17 +58,17 @@ Public Module General
         Public Name As String
         Public Type As _Type
         Public Expression As String
-        Public Reference As KeyValuePair(Of String, String)
+        Public ReferenceColumn As Column
 
         Public Sub New(ByVal name As String, ByVal type As _Type)
             Me.Name = name
             Me.Type = type
         End Sub
 
-        Public Sub New(ByVal name As String, ByVal type As _Type, ByVal refTable As String, ByVal refColumn As String)
+        Public Sub New(ByVal name As String, ByVal type As _Type, ByVal referenceColumn As Column)
             Me.Name = name
             Me.Type = type
-            Me.Reference = New KeyValuePair(Of String, String)(refTable, refColumn)
+            Me.ReferenceColumn = referenceColumn
         End Sub
 
         Public Sub New(ByVal name As String, ByVal type As _Type, ByVal expression As String)
@@ -110,10 +127,5 @@ Public Module General
         Next
 
         Return elements
-    End Function
-
-    <Extension>
-    Public Function Table(ByVal tables As List(Of Table), ByVal tableName As String) As Table
-        Return tables.Find(Function(tbl) tbl.Name = tableName)
     End Function
 End Module

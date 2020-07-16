@@ -1,4 +1,5 @@
 ﻿Public Class Table
+    Public ParentSchema As Schema
     Public Name As String
     Public Columns As List(Of Column)
     Public Comment As String
@@ -6,16 +7,14 @@
     '-------------
     ' Constructor
     '-------------
-    Public Sub New(ByVal name As String, Optional ByVal columns As List(Of Column) = Nothing)
+    Public Sub New(ByVal parentSchema As Schema, ByVal name As String, ByVal columns As List(Of Column))
+        Me.ParentSchema = parentSchema
         Me.Name = name
-        Me.Columns = IIf(columns Is Nothing, New List(Of Column), columns)
-    End Sub
+        Me.Columns = columns
 
-    '---------
-    ' Methods
-    '---------
-    Public Sub AddColumn(ByVal name As String, ByVal dataType As DataType)
-        Columns.Add(New Column(name, dataType))
+        For Each col In Me.Columns
+            col.ParentTable = Me
+        Next
     End Sub
 
     '-----------

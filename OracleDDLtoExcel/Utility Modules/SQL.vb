@@ -4,13 +4,13 @@ Public Class SQL
     '-----------
     ' Variables
     '-----------
-    Public Tables As List(Of Table)
-    Private SQLCommands As List(Of String)
+    Public Schemas As List(Of Schema)
+    Private CurrentSchema As Schema
 
     '-----------
     ' Constants
     '-----------
-    Private Structure SQLRegex
+    Public Structure SQLRegex
         Const SQL_COMMENT As String = "(?:--[^\n]*)|(?:\/\*[^\*\/]*\*\/)"
 
         Const TABLE_NAME As String = "(?:[\""\']?(\w+)[\""\']?\.)?[\""\']?(\w+)[\""\']?"
@@ -19,7 +19,7 @@ Public Class SQL
         Const CONSTRAINT_NAME As String = "[\""\']?(\w+)[\""\']?"
 
         Const CREATE_COLUMN_LIST As String = "\(\s*((" & CREATE_COLUMN_SYNTAX & "[\s\,]+)+)\)"
-        Const CREATE_COLUMN_SYNTAX As String = COLUMN_NAME & "\s+(\w+\s*" & DATA_TYPE & "\s*((?:DEFAULT\s+([\w\'\""]+))|(?:AUTO INCREMENT))?"
+        Const CREATE_COLUMN_SYNTAX As String = COLUMN_NAME & "\s+(\w+\s*" & DATA_TYPE & "\s*((?:DEFAULT\s+([^\n]+))|(?:AUTO INCREMENT))?"
 
         Const ALTER_COLUMN_LIST = "\(\s*((?:[\""\']?\w+[\""\']?\,*\s*)+)\s*\)"
         Const ALTER_ADD_CONSTRAINT = "\s+ADD\s+CONSTRAINT\s+" & CONSTRAINT_NAME
@@ -30,7 +30,7 @@ Public Class SQL
     '--------------
     ' Enumerations
     '--------------
-    Private Enum DDLCommand
+    Public Enum DDLCommand
         NONE
         CREATE_TABLE
         CREATE_GLOBAL_TEMPORARY_TABLE
@@ -116,12 +116,8 @@ Public Class SQL
     '-------------
     ' Constructor
     '-------------
-    Public Sub New(ByVal command As String)
-        Tables = New List(Of Table)
-        SQLCommands = New List(Of String)
-
-        command = Regex.Replace(command, SQLRegex.SQL_COMMENT, String.Empty, RegexOptions.IgnoreCase)
-        SQLCommands = GetSQLCommands(command)
+    Public Sub New()
+        Schemas = New List(Of Schema)
     End Sub
 
     '---------
@@ -129,50 +125,39 @@ Public Class SQL
     '---------
     Public Sub ExecuteCommands()
         Dim ddlCommand As DDLCommand
-        Dim progressValue As Integer = 0
+        Dim progressValue As Integer
+        Dim messageArgs As String()
 
-        Call ShowStatus(EXECUTE_COMMANDS, progressValue, SQLCommands.Count, New String() {progressValue.ToString, SQLCommands.Count.ToString})
+        For Each schema As Schema In Schemas
+            CurrentSchema = schema
+            progressValue = 0
 
-        For Each sqlCommand As String In SQLCommands
-            progressValue += 1
-            Application.DoEvents()
-            If CancelFlg Then Exit Sub
+            messageArgs = New String() {schema.FileName, progressValue.ToString, schema.SQLCommands.Count.ToString}
+            Call ShowStatus(EXECUTE_COMMANDS, progressValue, schema.SQLCommands.Count, messageArgs)
 
-            ddlCommand = GetDDLCommand(sqlCommand)
-            If Not ddlCommand = DDLCommand.NONE Then
-                Call CallByName(Me, GetMethodName(ddlCommand), CallType.Method, sqlCommand.Trim)
-            End If
+            For Each sqlCommand As String In schema.SQLCommands
+                If CancelFlg Then Exit Sub
 
-            Call ShowStatus(EXECUTE_COMMANDS, progressValue, New String() {progressValue.ToString, SQLCommands.Count.ToString})
+                progressValue += 1
+                messageArgs = New String() {schema.FileName, progressValue.ToString, schema.SQLCommands.Count.ToString}
+                Call ShowStatus(EXECUTE_COMMANDS, progressValue, messageArgs)
+
+                ddlCommand = GetDDLCommand(sqlCommand)
+                If Not ddlCommand = DDLCommand.NONE Then
+                    Call CallByName(Me, GetMethodName(ddlCommand), CallType.Method, sqlCommand.Trim)
+                End If
+
+                Application.DoEvents()
+            Next
         Next
     End Sub
-
-    Private Function GetSQLCommands(ByVal sqlCommand As String) As List(Of String)
-        Dim sqlCommandList As List(Of String)
-        Dim ddlCommandString As String
-        Dim commandRegex As String
-        Dim replaceString As String
-
-        For Each command As DDLCommand In [Enum].GetValues(GetType(DDLCommand))
-            If sqlCommand.Contains(command.EnumToString()) Then
-                ddlCommandString = command.EnumToString()
-                commandRegex = command.ToRegex(String.Empty, "\s+")
-                replaceString = Chr(36) & ddlCommandString & Chr(32)
-                sqlCommand = Regex.Replace(sqlCommand, commandRegex, replaceString, RegexOptions.IgnoreCase)
-            End If
-        Next
-
-        sqlCommandList = sqlCommand.Split(Chr(36)).ToList
-        sqlCommandList.Remove(String.Empty)
-
-        Return sqlCommandList
-    End Function
 
     Public Sub CreateTable(ByVal command As String)
         Dim table As Table
         Dim columns As List(Of Column)
         Dim regexSuffix As String
         Dim commandRegex As String
+        Dim schemaName As String
         Dim tableName As String
         Dim tableGroups As GroupCollection
 
@@ -180,10 +165,16 @@ Public Class SQL
         commandRegex = DDLCommand.CREATE_TABLE.ToRegex(String.Empty, regexSuffix)
         tableGroups = Regex.Match(command, commandRegex, RegexOptions.IgnoreCase).Groups
 
+        schemaName = tableGroups.Item(TableGroup.SCHEMA_NAME).ToString
         tableName = tableGroups.Item(TableGroup.TABLE_NAME).ToString
         columns = GetColumns(tableGroups.Item(TableGroup.COLUMN_LIST).ToString.Trim)
-        table = New Table(tableName, columns)
-        Tables.Add(table)
+
+        If IsNothing(CurrentSchema.Name) Then
+            CurrentSchema.Name = schemaName
+        End If
+
+        table = New Table(CurrentSchema, tableName, columns)
+        CurrentSchema.Tables.Add(table)
     End Sub
 
     Public Sub CreateGlobalTemporaryTable(ByVal command As String)
@@ -191,6 +182,7 @@ Public Class SQL
         Dim columns As List(Of Column)
         Dim regexSuffix As String
         Dim commandRegex As String
+        Dim schemaName As String
         Dim tableName As String
         Dim tableGroups As GroupCollection
 
@@ -198,10 +190,16 @@ Public Class SQL
         commandRegex = DDLCommand.CREATE_GLOBAL_TEMPORARY_TABLE.ToRegex(String.Empty, regexSuffix)
         tableGroups = Regex.Match(command, commandRegex).Groups
 
+        schemaName = tableGroups.Item(TableGroup.SCHEMA_NAME).ToString
         tableName = tableGroups.Item(TableGroup.TABLE_NAME).ToString
         columns = GetColumns(tableGroups.Item(TableGroup.COLUMN_LIST).ToString.Trim)
-        table = New Table(tableName, columns)
-        Tables.Add(table)
+
+        If IsNothing(CurrentSchema.Name) Then
+            CurrentSchema.Name = schemaName
+        End If
+
+        table = New Table(CurrentSchema, tableName, columns)
+        CurrentSchema.Tables.Add(table)
     End Sub
 
     Public Sub CommentOnTable(ByVal command As String)
@@ -217,7 +215,7 @@ Public Class SQL
 
         tableName = commentGroups.Item(ColumnCommentGroup.TABLE_NAME).ToString
         comment = commentGroups.Item(ColumnCommentGroup.COMMENT).ToString
-        Tables.Table(tableName).Comment = comment
+        CurrentSchema.Table(tableName).Comment = comment
     End Sub
 
     Public Sub CommentOnColumn(ByVal command As String)
@@ -235,7 +233,8 @@ Public Class SQL
         tableName = commentGroups.Item(ColumnCommentGroup.TABLE_NAME).ToString
         columnName = commentGroups.Item(ColumnCommentGroup.COLUMN_NAME).ToString
         comment = commentGroups.Item(ColumnCommentGroup.COMMENT).ToString
-        Tables.Table(tableName).Column(columnName).Comment = comment
+
+        CurrentSchema.Table(tableName).Column(columnName).Comment = comment
     End Sub
 
     Public Sub AlterTable(ByVal command As String)
@@ -290,7 +289,7 @@ Public Class SQL
         Dim tableName As String = constraintGroups.Item(NotNullGroup.TABLE_NAME).ToString
         Dim columnName As String = constraintGroups.Item(NotNullGroup.COLUMN_NAME).ToString
 
-        Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.NOT_NULL)
+        CurrentSchema.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.NOT_NULL)
     End Sub
 
     Public Sub AddPrimaryKeyConstraint(ByVal constraintGroups As GroupCollection)
@@ -300,7 +299,7 @@ Public Class SQL
 
         For Each columnName As String In columnList
             columnName = columnName.Replace(Chr(34), String.Empty)
-            Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.PRIMARY_KEY)
+            CurrentSchema.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.PRIMARY_KEY)
         Next
     End Sub
 
@@ -311,7 +310,7 @@ Public Class SQL
 
         For Each columnName As String In columnList
             columnName = columnName.Replace(Chr(34), String.Empty)
-            Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.UNIQUE)
+            CurrentSchema.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.UNIQUE)
         Next
     End Sub
 
@@ -319,15 +318,14 @@ Public Class SQL
         Dim constraintName As String = constraintGroups.Item(ForeignGroup.CONSTRAINT_NAME).ToString
         Dim tableName As String = constraintGroups.Item(ForeignGroup.TABLE_NAME).ToString
         Dim columnList As List(Of String) = GetElements(constraintGroups.Item(ForeignGroup.COLUMN_LIST).ToString)
+        Dim refSchemaName As String = constraintGroups.Item(ForeignGroup.REF_SCHEMA_NAME).ToString
         Dim refTableName As String = constraintGroups.Item(ForeignGroup.REF_TABLE_NAME).ToString
         Dim refColumnList As List(Of String) = GetElements(constraintGroups.Item(ForeignGroup.REF_COLUMN_LIST).ToString)
-        Dim addlClause As List(Of String)
+        Dim refColumn As Column
 
-        For Each columnName As String In columnList
-            addlClause = New List(Of String)
-            addlClause.Add(refTableName)
-            addlClause.Add(refColumnList.Item(columnList.IndexOf(columnName)))
-            Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.FOREIGN_KEY, addlClause)
+        For index As Integer = 0 To columnList.Count - 1
+            refColumn = Schema(refSchemaName).Table(refTableName).Column(refColumnList.Item(index))
+            CurrentSchema.Table(tableName).Column(columnList.Item(index)).AddConstraint(constraintName, Constraint._Type.FOREIGN_KEY, refColumn)
         Next
     End Sub
 
@@ -335,10 +333,9 @@ Public Class SQL
         Dim constraintName As String = constraintGroups.Item(CheckGroup.CONSTRAINT_NAME).ToString
         Dim tableName As String = constraintGroups.Item(CheckGroup.TABLE_NAME).ToString
         Dim columnName As String = constraintGroups.Item(CheckGroup.COLUMN_NAME).ToString
-        Dim condition As String = constraintGroups.Item(CheckGroup.CONDITION).ToString
-        Dim addlClause As New List(Of String)({condition})
+        Dim expression As String = constraintGroups.Item(CheckGroup.CONDITION).ToString
 
-        Tables.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.CHECK, addlClause)
+        CurrentSchema.Table(tableName).Column(columnName).AddConstraint(constraintName, Constraint._Type.CHECK, expression)
     End Sub
 
     '------------
@@ -365,7 +362,7 @@ Public Class SQL
             dataTypeArgs = columnGroups(ColumnGroup.ARGUMENTS).ToString
             autoDefault = columnGroups(ColumnGroup.AUTO_DEFAULT).ToString
 
-            If autoDefault.Contains(" DEFAULT ") Then
+            If autoDefault.Contains("DEFAULT") Then
                 defaultValue = columnGroups(ColumnGroup.DEFAULT_VALUE).ToString
             Else
                 defaultValue = columnGroups(ColumnGroup.AUTO_DEFAULT).ToString
@@ -407,5 +404,9 @@ Public Class SQL
         methodName = prefix & methodName & suffix
 
         Return methodName
+    End Function
+
+    Public Function Schema(ByVal name As String) As Schema
+        Return Schemas.Find(Function(findSchema) findSchema.Name = name)
     End Function
 End Class

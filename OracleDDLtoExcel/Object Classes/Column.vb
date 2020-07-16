@@ -2,6 +2,7 @@
     '------------
     ' Attributes
     '------------
+    Public ParentTable As Table
     Public Name As String
     Public DataType As DataType
     Public DefaultValue As String
@@ -21,15 +22,21 @@
     '---------
     ' Methods
     '---------
-    Public Sub AddConstraint(ByVal name As String, ByVal type As Constraint._Type, Optional ByVal addlClauses As List(Of String) = Nothing)
-        If Not Constraints.Exists(Function(ct) ct.Type = type) Then
-            If type = Constraint._Type.FOREIGN_KEY Then
-                Constraints.Add(New Constraint(name, type, addlClauses.Item(0), addlClauses.Item(1)))
-            ElseIf type = Constraint._Type.CHECK Then
-                Constraints.Add(New Constraint(name, type, addlClauses.Item(0)))
-            Else
-                Constraints.Add(New Constraint(name, type))
-            End If
+    Public Sub AddConstraint(ByVal name As String, ByVal type As Constraint._Type)
+        If type = Constraint._Type.NOT_NULL OrElse type = Constraint._Type.PRIMARY_KEY OrElse Constraint._Type.UNIQUE Then
+            Constraints.Add(New Constraint(name, type))
+        End If
+    End Sub
+
+    Public Sub AddConstraint(ByVal name As String, ByVal type As Constraint._Type, ByVal referenceColumn As Column)
+        If type = Constraint._Type.FOREIGN_KEY Then
+            Constraints.Add(New Constraint(name, type, referenceColumn))
+        End If
+    End Sub
+
+    Public Sub AddConstraint(ByVal name As String, ByVal type As Constraint._Type, ByVal expression As String)
+        If type = Constraint._Type.CHECK Then
+            Constraints.Add(New Constraint(name, type, expression))
         End If
     End Sub
 End Class

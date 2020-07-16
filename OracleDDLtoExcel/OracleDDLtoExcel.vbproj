@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Object Classes\Column.vb" />
+    <Compile Include="Object Classes\Schema.vb" />
     <Compile Include="Utility Modules\SQL.vb" />
     <Compile Include="Object Classes\Excel.vb" />
     <Compile Include="Utility Modules\General.vb" />
@@ -154,6 +155,9 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\trash.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
