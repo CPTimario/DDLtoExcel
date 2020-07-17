@@ -6,9 +6,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3A137015-2D39-4E1A-834D-DE161645BE23}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>OracleDDLtoExcel.My.MyApplication</StartupObject>
-    <RootNamespace>OracleDDLtoExcel</RootNamespace>
-    <AssemblyName>OracleDDLtoExcel</AssemblyName>
+    <StartupObject>DDLtoExcel.My.MyApplication</StartupObject>
+    <RootNamespace>DDLtoExcel</RootNamespace>
+    <AssemblyName>DDLtoExcel</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -22,7 +22,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>OracleDDLtoExcel.xml</DocumentationFile>
+    <DocumentationFile>DDLtoExcel.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,7 +32,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>OracleDDLtoExcel.xml</DocumentationFile>
+    <DocumentationFile>DDLtoExcel.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>

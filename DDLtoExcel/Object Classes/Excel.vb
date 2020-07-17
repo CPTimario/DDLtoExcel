@@ -1,5 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
-Imports OracleDDLtoExcel.SQL
+Imports DDLtoExcel.SQL
 Imports XL = Microsoft.Office.Interop.Excel
 
 Class Excel

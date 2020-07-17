@@ -158,7 +158,7 @@ Partial Class Main
         '
         'btnRemoveSchema
         '
-        Me.btnRemoveSchema.BackgroundImage = Global.OracleDDLtoExcel.My.Resources.Resources.trash
+        Me.btnRemoveSchema.BackgroundImage = Global.DDLtoExcel.My.Resources.Resources.trash
         Me.btnRemoveSchema.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnRemoveSchema.Enabled = False
         Me.btnRemoveSchema.Location = New System.Drawing.Point(606, 100)

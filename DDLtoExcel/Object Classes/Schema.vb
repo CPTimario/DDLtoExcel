@@ -1,5 +1,5 @@
 ﻿Imports System.Text.RegularExpressions
-Imports OracleDDLtoExcel.SQL
+Imports DDLtoExcel.SQL
 
 Public Class Schema
     Public Name As String

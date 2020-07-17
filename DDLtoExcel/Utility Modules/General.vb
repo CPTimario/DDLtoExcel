@@ -1,5 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
-Imports OracleDDLtoExcel
+Imports DDLtoExcel
 
 Public Module General
     '-----------
