@@ -12,7 +12,7 @@ This helped me with two things:
 
 ### Limitations
 - It works only on Oracle database.
-- It has limited [DDL command support](#how-it-works) (I only added those I needed at the moment).
+- It has limited [DDL command support](#supported-commands) (I only added those I needed at the moment).
 - Each **Table Sheet** is named after the `TABLE` name, it has to be limited to **31 characters**, or else it will throw an error.
   - If the `SCHEMA` name is **INCLUDED** in the DDL commands, the name of **Table Sheet** will be *"SCH[n].TableName"* where *n* is the number of schema.
   - I decided not to include the `SCHEMA` name in the name of **Table Sheet** because of the **31-character** limitation of Excel.
@@ -50,20 +50,20 @@ The system creates the table structures based on the DDL commands on a .sql file
 
 It then creates an Excel workbook with:
 
-**Summary Sheet**
+#### Summary Sheet
   - It contains the list of `TABLE` and their corresponding `COMMENT`.
   - Each `TABLE` has a hyperlink to its corresponding **Table Sheet**.
   
 *Example:*
 |No.|Table Name|Comment|
 |---|---|---|
-|1|[Table1 Name](/#)|Table1 Comment|
-|2|[Table2 Name](/#)|Table2 Comment|
-|3|[Table3 Name](/#)|Table3 Comment|
+|1|[Table1 Name](#table-sheet)|Table1 Comment|
+|2|[Table2 Name](#table-sheet)|Table2 Comment|
+|3|[Table3 Name](#table-sheet)|Table3 Comment|
 |...|...|...|
 |n|[Table[n] Name](/#)|Table[n] Comment|
 
-**Table Sheet**
+#### Table Sheet
   - Each `TABLE` has it's own **Table Sheet**.
   - It contains the list of `COLUMN` and their corresponding `CONSTRAINT ` and `COMMENT`.
   - Each `FOREIGN KEY` constraint has a hyperlink to its corresponding **Table Sheet**.
@@ -96,7 +96,7 @@ It then creates an Excel workbook with:
       <td>[YES]</td>
       <td>[YES]</td>
       <td>[YES]</td>
-      <td><a href="/#">[Table Name].[Column Name]</a></td>
+      <td><a href="#table-sheet">[Table Name].[Column Name]</a></td>
       <td>[CONDITION]</td>
       <td>Column1 Comment</td>
     </tr>
@@ -108,7 +108,7 @@ It then creates an Excel workbook with:
       <td>[YES]</td>
       <td>[YES]</td>
       <td>[YES]</td>
-      <td><a href="/#">[Table Name].[Column Name]</a></td>
+      <td><a href="#table-sheet">[Table Name].[Column Name]</a></td>
       <td>[CONDITION]</td>
       <td>Column2 Comment</td>
     </tr>
@@ -120,7 +120,7 @@ It then creates an Excel workbook with:
       <td>[YES]</td>
       <td>[YES]</td>
       <td>[YES]</td>
-      <td><a href="/#">[Table Name].[Column Name]</a></td>
+      <td><a href="#table-sheet">[Table Name].[Column Name]</a></td>
       <td>[CONDITION]</td>
       <td>Column3 Comment</td>
     </tr>
@@ -144,7 +144,7 @@ It then creates an Excel workbook with:
       <td>[YES]</td>
       <td>[YES]</td>
       <td>[YES]</td>
-      <td><a href="/#">[Table Name].[Column Name]</a></td>
+      <td><a href="#table-sheet">[Table Name].[Column Name]</a></td>
       <td>[CONDITION]</td>
       <td>Column[n] Comment</td>
     </tr>
