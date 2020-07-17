@@ -1,2 +1,2 @@
-# OracleDDLtoExcel
-Converts Oracle DDL commands into Excel
+# DDLtoExcel
+Converts SQL DDL commands into Excel
