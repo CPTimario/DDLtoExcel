@@ -140,7 +140,7 @@ Release:
         xlRange.Value = "TABLE NAME"
 
         xlRange = xlWorksheet.Range("D" & rowIndex)
-        xlRange.Value = "DESCRIPTION"
+        xlRange.Value = "COMMENT"
 
         xlRange = xlWorksheet.Range("B" & headerStart, "D" & headerStart)
         xlFont = xlRange.Font
@@ -170,6 +170,10 @@ Release:
             'TABLE NAME
             xlRange = xlWorksheet.Cells(rowIndex, COL_START + 1)
             xlRange.Value = table.Name
+
+            'COMMENT
+            xlRange = xlWorksheet.Cells(rowIndex, COL_START + 2)
+            xlRange.Value = table.Comment
 
             'Hyperlink
             If schema.Name.Equals(String.Empty) Then
