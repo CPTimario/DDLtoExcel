@@ -171,16 +171,16 @@ Release:
             xlRange = xlWorksheet.Cells(rowIndex, COL_START + 1)
             xlRange.Value = table.Name
 
-            'COMMENT
-            xlRange = xlWorksheet.Cells(rowIndex, COL_START + 2)
-            xlRange.Value = table.Comment
-
             'Hyperlink
             If schema.Name.Equals(String.Empty) Then
                 xlHyperlinks.Add(xlRange, String.Empty, "'" & table.Name & "'!A1")
             Else
-                xlHyperlinks.Add(xlRange, String.Empty, "'" & schema.Name & "." & table.Name & "'!A1")
+                xlHyperlinks.Add(xlRange, String.Empty, "'(SCH" & (Schemas.IndexOf(schema) + 1) & ")." & table.Name & "'!A1")
             End If
+
+            'COMMENT
+            xlRange = xlWorksheet.Cells(rowIndex, COL_START + 2)
+            xlRange.Value = table.Comment
 
             Application.DoEvents()
         Next
@@ -379,7 +379,7 @@ Release:
         Dim rowIndex As Integer = HEADER_ROW_START + tableIndex + 1
 
         For index As Integer = 0 To schemaIndex - 1
-            rowIndex += Schemas.Item(index).Tables.Count + 2
+            rowIndex += Schemas.Item(index).Tables.Count + index + 2
         Next
 
         Return rowIndex

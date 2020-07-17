@@ -62,6 +62,13 @@ Public Class SQL
         COMMENT
     End Enum
 
+    Private Enum TableCommentGroup
+        NONE
+        SCHEMA_NAME
+        TABLE_NAME
+        COMMENT
+    End Enum
+
     Private Enum ColumnCommentGroup
         NONE
         SCHEMA_NAME
@@ -213,8 +220,8 @@ Public Class SQL
         commandRegex = DDLCommand.COMMENT_ON_TABLE.ToRegex(String.Empty, regexSuffix)
         commentGroups = Regex.Match(command, commandRegex, RegexOptions.IgnoreCase).Groups
 
-        tableName = commentGroups.Item(ColumnCommentGroup.TABLE_NAME).ToString
-        comment = commentGroups.Item(ColumnCommentGroup.COMMENT).ToString
+        tableName = commentGroups.Item(TableCommentGroup.TABLE_NAME).ToString
+        comment = commentGroups.Item(TableCommentGroup.COMMENT).ToString
         CurrentSchema.Table(tableName).Comment = comment
     End Sub
 
