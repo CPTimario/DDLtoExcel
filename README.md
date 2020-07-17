@@ -150,3 +150,6 @@ It then creates an Excel workbook with:
     </tr>
   </tbody>
 </table>
+
+## Acknowledgements
+- Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from www.flaticon.com
